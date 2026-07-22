@@ -1,7 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
-import 'package:mony_time/src/features/auth/presentation/providers/session_bloc.dart';
+import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    final session = context.watch<SessionBloc>().state;
+    final session = context.watch<SessionCubit>().state;
     final user = session.user;
 
     return Scaffold(

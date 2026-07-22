@@ -1,23 +1,33 @@
-import 'package:equatable/equatable.dart';
+import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
-class AppUser extends Equatable {
-  final String id;
-  final String email;
-  final String? name;
-  final String? photoUrl;
-
-  const AppUser({
-    required this.id,
-    required this.email,
-    this.name,
-    this.photoUrl,
+/// Data-layer representation of [AppUser] with JSON mapping.
+///
+/// The domain entity stays free of `fromJson`/`toJson` — only models
+/// know about the API shape.
+class UserModel extends AppUser {
+  const UserModel({
+    required super.id,
+    required super.email,
+    super.name,
+    super.photoUrl,
   });
 
-  factory AppUser.empty() => const AppUser(id: '', email: '');
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    // Some endpoints wrap the payload: { "user": { ... } }
+    final data = (json['user'] as Map<String, dynamic>?) ?? json;
 
-  bool get isEmpty => id.isEmpty;
-  bool get isNotEmpty => id.isNotEmpty;
+    return UserModel(
+      id: data['id']?.toString() ?? '',
+      email: data['email'] as String? ?? '',
+      name: data['name'] as String?,
+      photoUrl: data['photoUrl'] as String?,
+    );
+  }
 
-  @override
-  List<Object?> get props => [id, email, name, photoUrl];
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'email': email,
+        'name': name,
+        'photoUrl': photoUrl,
+      };
 }

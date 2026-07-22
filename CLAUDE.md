@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Flutter app scaffolded by the FlutterInit wizard. Clean Architecture + bloc + go_router + custom (Dio) backend.
+Flutter app scaffolded by the FlutterInit wizard. Clean Architecture + **Cubit** (not Bloc — no events) + go_router + custom (Dio) backend.
 
 **The Dart package is `mony_time` (no `e`), while the directory is `money_time`.** All internal imports are `package:mony_time/...`. Do not "fix" this mismatch.
 
@@ -39,17 +39,42 @@ No `build_runner` / codegen step exists for this stack — do not add one withou
 
 ### Startup chain
 
-`main.dart` → `LocalizationWrapper` (EasyLocalization, en/ar) → `StateWrapper` (`MultiBlocProvider`, currently only `SessionBloc`) → `App` → `ScreenUtilWrapper` → `MaterialApp.router` → builder wraps `SkeletonWrapper` then `SessionListenerWrapper`.
+`main.dart` → `LocalizationWrapper` (EasyLocalization, en/ar) → `StateWrapper` (`MultiBlocProvider`, app-wide cubits — currently only `SessionCubit`) → `App` → `ScreenUtilWrapper` → `MaterialApp.router` → builder wraps `SkeletonWrapper` then `SessionListenerWrapper`.
 
 Ordering is load-bearing: `EasyLocalization.ensureInitialized()` → `dotenv.load()` → `AppConfig.init()` (builds the shared `Dio` + logging interceptors) → `runApp`. Native splash is preserved in `main` and removed by `SessionListenerWrapper` once session status resolves.
 
-**App-wide blocs are registered in [lib/src/shared/wrappers/state_wrapper.dart](lib/src/shared/wrappers/state_wrapper.dart)**, not in `main.dart`. Feature-scoped blocs (e.g. `AuthBloc`) are provided locally at the screen/route level.
+**App-wide cubits are registered in [lib/src/shared/wrappers/state_wrapper.dart](lib/src/shared/wrappers/state_wrapper.dart)**, not in `main.dart`. Feature-scoped cubits are provided per screen via the feature's DI factory (`BlocProvider(create: (_) => AuthDi.authCubit())`).
 
-### Layer flow
+### Feature blueprint — auth is the reference
 
-`presentation (bloc) → domain repository contract → data repository impl → services/<x>_service.dart → AppConfig.dio`
+The auth feature is the template every new feature copies:
 
-Repositories map raw `Map<String, dynamic>` from services into domain entities. Services never return entities; domain never sees Dio.
+```text
+lib/src/features/auth/
+├── auth_di.dart                     # manual wiring: repo singleton + cubit factories (no DI framework)
+├── domain/
+│   ├── entities/user.dart           # pure Equatable entity, no JSON
+│   ├── repositories/auth_repository.dart   # abstract contract, returns FutureEither<T>
+│   └── usecases/login_usecase.dart  # one class per action, single call() delegating to repo
+├── data/
+│   ├── models/user_model.dart       # extends the entity, adds fromJson/toJson
+│   ├── datasources/auth_remote_data_source.dart  # raw Dio calls, THROWS on failure
+│   └── repositories/auth_repository_impl.dart    # wraps datasource in runTask() → Either
+└── presentation/
+    ├── cubits/auth_cubit.dart       # state class + cubit in ONE file; status enum, copyWith
+    ├── screens/login_screen.dart    # BlocProvider → thin body composing sections
+    ├── sections/login_form_section.dart   # page chunks (form, social row, …)
+    └── widgets/password_field.dart  # small reusable feature widgets
+```
+
+Layer flow: `screen → cubit → usecase → repository contract → repository impl → datasource → AppConfig.dio`.
+
+Rules baked into this pattern:
+- **Cubits emit state only** — never navigate, never toast, never take `BuildContext`. Screens react in a `BlocConsumer`/`BlocListener` (see `_onStateChanged` in [login_screen.dart](lib/src/features/auth/presentation/screens/login_screen.dart)).
+- Datasources throw; repositories are the only place that calls `runTask()`. Nothing above the repo sees exceptions.
+- Screens own controllers/form keys and stay thin; layout lives in `sections/`; reusable pieces in `widgets/`.
+- Wiring is manual and boring: one `<feature>_di.dart` with static factories. No get_it.
+- `SessionCubit` (app-wide) resolves session at startup and handles logout; after login/signup the screen calls `sessionCubit.setUser(...)` then navigates. There is no auth-state stream.
 
 ### Error handling — the `runTask` contract
 
@@ -57,9 +82,7 @@ Everything async that can fail goes through `runTask()` in [lib/src/utils/task_r
 
 ### Services
 
-Singletons via `ClassName.instance` (see [auth_service.dart](lib/src/services/auth_service.dart)), exported from [services.dart](lib/src/services/services.dart). Never pass `BuildContext` into a service — use `rootContext` from [global_navigator.dart](lib/src/routing/global_navigator.dart) (nullable; `rootNavigatorKey` is wired to `GoRouter`, not `MaterialApp`) or `showGlobalToast()`.
-
-`AuthService` owns a manual `StreamController` for auth-state changes since the custom backend has no auth stream; `SessionBloc` subscribes to it through the repository.
+[lib/src/services/](lib/src/services/) holds cross-cutting device/platform services (storage, location, media, permissions…), singletons via `ClassName.instance`, exported from [services.dart](lib/src/services/services.dart). **Feature API calls do NOT go here** — they live in the feature's `data/datasources/`. Never pass `BuildContext` into a service — use `rootContext` from [global_navigator.dart](lib/src/routing/global_navigator.dart) (nullable) or `showGlobalToast()`.
 
 ### Routing
 
@@ -85,22 +108,18 @@ Read [DESIGN.md](DESIGN.md) in full before writing UI. Highest-leverage rules:
 - Type: `context.textTheme`. Font family `Roboto` is applied app-wide; never set `fontFamily:` inline.
 - Tokens: `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves`. No magic paddings or `BorderRadius.circular(n)`.
 - Strings: `'section.key'.tr()` with keys added to **both** `assets/translations/en.json` and `ar.json`. The app supports Arabic — verify RTL.
-- Reusable widgets live in [lib/src/shared/widgets/](lib/src/shared/widgets/) (`AppButton`, `AppTextField`, `AppCard`, `AppTopBar`, `AppIcon`, `AppLoading`, `AppEmptyState`, `AppErrorWidget`, `CommonImage`, `AppCachedImage`) and are exported via `widgets.dart`. Prefer extending these over new one-off widgets.
+- Reusable widgets live in [lib/src/shared/widgets/](lib/src/shared/widgets/) (`AppButton`, `AppTextField`, `AppCard`, `AppTopBar`, `AppIcon`, `AppLoading`, `AppEmptyState`, `AppErrorWidget`, `CommonImage`, `AppCachedImage`) and are exported via `widgets.dart`. Prefer extending these over new one-off widgets. Form validation uses `AppValidators` from [validators.dart](lib/src/shared/helpers/validators.dart) — no inline validator lambdas repeating the same checks.
 - Asset paths go in [app_assets.dart](lib/src/shared/app_assets.dart) as constants.
 
 ### ScreenUtil — note the baseline discrepancy
 
 `ScreenUtilWrapper` defaults to **`Size(360, 690)`**, while DESIGN.md documents a 390×844 baseline. When translating a Figma frame, confirm which baseline you are scaling against; if you standardize on the Figma frame size, change the `designSize` default in [screen_util_wrapper.dart](lib/src/shared/wrappers/screen_util_wrapper.dart) once rather than compensating per screen.
 
-Use `.w` / `.h` / `.r` / `.sp` on numeric literals. `AppSpacing` values are already `.r`-scaled getters — existing screens still write `AppSpacing.lg.w`, which double-scales; prefer `AppSpacing.lg` alone in new code. ScreenUtil values are runtime, so widgets depending on them cannot be `const`.
+Use `.w` / `.h` / `.r` / `.sp` on numeric literals. `AppSpacing` values are already `.r`-scaled getters — use `AppSpacing.lg` bare, never `AppSpacing.lg.w` (double-scales). ScreenUtil values are runtime, so widgets depending on them cannot be `const`.
 
 ### Screen pattern
 
-Existing screens (see [login_screen.dart](lib/src/features/auth/presentation/screens/login_screen.dart)) split a `StatefulWidget` holding controllers/form key from a private `_XView` `StatelessWidget` that renders. Follow this when a screen owns controllers.
-
-## Deviations to be aware of
-
-`AuthBloc` currently passes `BuildContext` inside events and navigates/toasts from the event handler. This contradicts AGENTS.md ("keep handlers thin", no side-effect navigation from blocs). Do not propagate this pattern into new features — emit state and drive navigation/toasts from `BlocListener` / `BlocConsumer` in the presentation layer.
+Public screen widget = `BlocProvider` shell; private `_XBody` `StatefulWidget` owns controllers/form key and composes `sections/`. Side effects (toast, navigation) happen only in the `BlocConsumer` listener. See the three auth screens.
 
 ## Hard limits
 

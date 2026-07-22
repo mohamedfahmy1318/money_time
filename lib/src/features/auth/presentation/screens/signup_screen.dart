@@ -1,23 +1,38 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
-import 'package:mony_time/src/features/auth/presentation/providers/auth_bloc.dart';
+import 'package:mony_time/src/features/auth/auth_di.dart';
+import 'package:mony_time/src/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/sections/signup_form_section.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/auth_footer_link.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/auth_header.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => AuthDi.authCubit(),
+      child: const _SignupBody(),
+    );
+  }
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupBody extends StatefulWidget {
+  const _SignupBody();
+
+  @override
+  State<_SignupBody> createState() => _SignupBodyState();
+}
+
+class _SignupBodyState extends State<_SignupBody> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -28,210 +43,69 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
-
-    final cs = context.theme.colorScheme;
-    final tt = context.theme.textTheme;
-
-    Future<void> handleSignup() async {
-      if (!(_formKey.currentState?.validate() ?? false)) return;
-      
-
-      context.read<AuthBloc>().add(
-        SignUpRequested(
-          context: context, 
-          name: _nameController.text,
-          email: _emailController.text, 
+  void _submit() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    context.hideKeyboard();
+    context.read<AuthCubit>().signUp(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
           password: _passwordController.text,
-        ),
-      );
-    }
-
-    return _SignupView(
-      formKey: _formKey,
-      nameController: _nameController,
-      emailController: _emailController,
-      passwordController: _passwordController,
-      confirmPasswordController: _confirmPasswordController,
-      obscurePassword: _obscurePassword,
-      obscureConfirmPassword: _obscureConfirmPassword,
-      isLoading: isLoading,
-      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-      onToggleConfirmObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-      onSignup: handleSignup,
-      cs: cs,
-      tt: tt,
-    );
+        );
   }
-}
 
-class _SignupView extends StatelessWidget {
-  const _SignupView({
-    required this.formKey,
-    required this.nameController,
-    required this.emailController,
-    required this.passwordController,
-    required this.confirmPasswordController,
-    required this.obscurePassword,
-    required this.obscureConfirmPassword,
-    required this.isLoading,
-    required this.onToggleObscure,
-    required this.onToggleConfirmObscure,
-    required this.onSignup,
-    required this.cs,
-    required this.tt,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
-  final bool obscurePassword;
-  final bool obscureConfirmPassword;
-  final bool isLoading;
-  final VoidCallback onToggleObscure;
-  final VoidCallback onToggleConfirmObscure;
-  final VoidCallback onSignup;
-  final ColorScheme cs;
-  final TextTheme tt;
+  void _onStateChanged(BuildContext context, AuthState state) {
+    switch (state.status) {
+      case AuthStatus.failure:
+        showToast(context, message: state.errorMessage ?? '', status: 'error');
+      case AuthStatus.authenticated:
+        context.read<SessionCubit>().setUser(state.user!);
+        context.go(AppRoutes.home);
+      default:
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: AppSpacing.xl.h),
-                Text(
-                  'auth.sign_up'.tr(),
-                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: AppSpacing.sm.h),
-                Text(
-                  'auth.sign_up_subtitle'.tr(),
-                  textAlign: TextAlign.center,
-                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                SizedBox(height: AppSpacing.xxxl.h),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      AppTextField(
-                        controller: nameController,
-                        enabled: !isLoading,
-                        label: 'auth.name'.tr(),
-                        prefixIcon: const Icon(Icons.person_outline),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.name_required'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      AppTextField(
-                        controller: emailController,
-                        enabled: !isLoading,
-                        label: 'auth.email'.tr(),
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.email_required'.tr();
-                          }
-                          if (!AppUtils.isValidEmail(v!)) {
-                            return 'auth.email_invalid'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      AppTextField(
-                        controller: passwordController,
-                        enabled: !isLoading,
-                        label: 'auth.password'.tr(),
-                        obscureText: obscurePassword,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: onToggleObscure,
-                        ),
-                         validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.password_required'.tr();
-                          }
-                          if (v!.length < 6) {
-                            return 'auth.password_too_short'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.md.h),
-                      AppTextField(
-                        controller: confirmPasswordController,
-                        enabled: !isLoading,
-                        label: 'auth.confirm_password'.tr(),
-                        obscureText: obscureConfirmPassword,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: onToggleConfirmObscure,
-                        ),
-                         validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return 'auth.confirm_password_required'.tr();
-                          }
-                          if (v != passwordController.text) {
-                            return 'auth.passwords_do_not_match'.tr();
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: AppSpacing.lg.h),
-                      AppButton(
-                        label: 'Sign Up',
-                        isLoading: isLoading,
-                        onPressed: isLoading ? null : onSignup,
-                        width: ButtonSize.large,
-                        isFullWidth: false,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: AppSpacing.xxxl.h),
-                InkWell(
-                  onTap: () {
-                    context.push(AppRoutes.login);
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      text: 'auth.already_have_account'.tr(),
-                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                      children: [
-                        TextSpan(
-                          text: 'auth.log_in'.tr(),
-                          style: TextStyle(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: _onStateChanged,
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Column(
+                  children: [
+                    SizedBox(height: AppSpacing.xl),
+                    AuthHeader(
+                      title: 'auth.sign_up'.tr(),
+                      subtitle: 'auth.sign_up_subtitle'.tr(),
                     ),
-                  ),
+                    SizedBox(height: AppSpacing.xxxl),
+                    SignupFormSection(
+                      formKey: _formKey,
+                      nameController: _nameController,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      confirmPasswordController: _confirmPasswordController,
+                      isLoading: state.isLoading,
+                      onSubmit: _submit,
+                    ),
+                    SizedBox(height: AppSpacing.xxxl),
+                    AuthFooterLink(
+                      prompt: 'auth.already_have_account'.tr(),
+                      action: 'auth.log_in'.tr(),
+                      onTap: () => context.pop(),
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+                  ],
                 ),
-                SizedBox(height: AppSpacing.xl.h),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

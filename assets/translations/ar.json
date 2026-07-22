@@ -42,6 +42,9 @@
     "or_continue_with": "Or Continue With Account",
     "forgot_password_title": "Forgot Password",
     "forgot_password_subtitle": "Enter your email address to receive a reset link\nand regain access to your account.",
-    "reset_link_sent": "Password reset link sent to your email."
+    "reset_link_sent": "Password reset link sent to your email.",
+    "sign_up_subtitle": "أنشئ حسابًا جديدًا للبدء.",
+    "send_reset_link": "إرسال رابط إعادة التعيين",
+    "back_to_login": "العودة لتسجيل الدخول"
   }
 }

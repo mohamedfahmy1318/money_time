@@ -53,13 +53,16 @@ lib/src/
 
 ---
 
-## State management (bloc)
+## State management (Cubit)
 
+We use **Cubit** (from `flutter_bloc`), not Bloc — no event classes.
 
-- Events and states are immutable — prefer `const` constructors.
+- States are immutable `Equatable` classes with a status enum and `copyWith` — prefer `const` constructors.
+- State class + cubit live in ONE file under `presentation/cubits/`.
 - `BlocBuilder` for UI rebuilds; `BlocListener` for side effects; `BlocConsumer` when both are needed.
-- Keep handlers thin — delegate to use cases, repositories, or services.
-- One bloc per feature flow — do not share blocs across unrelated features.
+- Cubits emit state only — never navigate, toast, or hold `BuildContext`.
+- Cubit methods stay thin — delegate to use cases.
+- One cubit per feature flow — do not share cubits across unrelated features. App-wide cubits go in `StateWrapper`; feature cubits are provided per screen via `<feature>_di.dart` factories.
 
 
 
@@ -156,13 +159,16 @@ For console setup (keys, native files, env), follow **[SETUP.md](SETUP.md)** —
 
 ## How to add a new feature
 
+Copy the **auth feature** — it is the reference implementation.
+
 1. Create domain entity and repository contract under `lib/src/features/<feature>/domain/`.
-2. Add use case(s) in `domain/usecases/` (single responsibility).
-3. Add data model, datasource, and repository implementation under `data/`.
-4. Wire state (bloc) under `presentation/`.
-5. Build screens and widgets under `presentation/`.
-6. Register the route in `lib/src/routing/app_router.dart`.
-7. Export new public API only through existing barrel files if needed.
+2. Add use case(s) in `domain/usecases/` (single responsibility, one `call()`).
+3. Add data model, datasource (raw Dio, throws), and repository implementation (wraps in `runTask()`) under `data/`.
+4. Add `<feature>_di.dart` with static factories wiring datasource → repo → usecases → cubit.
+5. Wire state (cubit) under `presentation/cubits/`.
+6. Build UI under `presentation/` split into `screens/` (thin, BlocProvider + listener), `sections/` (page chunks), `widgets/` (small reusable pieces).
+7. Register the route in `lib/src/routing/app_router.dart`.
+8. Export new public API only through existing barrel files if needed.
 
 
 
