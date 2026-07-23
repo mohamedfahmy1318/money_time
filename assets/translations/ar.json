@@ -1,19 +1,39 @@
 {
+  "app_name": "Money Time",
   "shared": {
-    "get_started": "Get Started"
+    "get_started": "ابدأ الآن",
+    "continue_action": "متابعة"
+  },
+  "splash": {
+    "tagline": "وقّت أموالك"
   },
   "onboarding": {
-    "onboarding_title_1": "Your Journey,\nPerfectly Planned",
-    "onboarding_subtitle_1": "Effortlessly create and organize your\ndream trips. Start exploring now!",
-    "onboarding_title_2": "Discover\nFriends Nearby",
-    "onboarding_subtitle_2": "See where your friends are traveling and\nexplore the world together.",
-    "onboarding_title_3": "Stay Updated\nwith Top Places",
-    "onboarding_subtitle_3": "Find trending destinations and must-see attractions,\nall tailored to enhance your travel plans."
+    "track_title": "تتبّع كل جنيه",
+    "track_subtitle": "اطّلع على الدخل والمصروفات والرصيد في كل حساباتك من مكان واحد.",
+    "budget_title": "ميزانيتك ببساطة",
+    "budget_subtitle": "حدّد ميزانيات أسبوعية أو شهرية أو سنوية وتابع كل فئة لحظة بلحظة.",
+    "goals_title": "حقّق أهدافك",
+    "goals_subtitle": "حدّد أهداف الادخار وشاهدها تنمو، ودع الادخار التلقائي يعمل نيابةً عنك.",
+    "already_have_account": "لديّ حساب بالفعل"
   },
-  "home": {
-    "home_title": "Home",
-    "welcome_home": "Welcome Home!",
-    "home_subtitle": "You have successfully completed the onboarding process."
+  "setup": {
+    "auto_detected": "تم الاكتشاف تلقائيًا · اضغط للتغيير",
+    "auto_device": "🌐  تلقائي (الجهاز)",
+    "language_title": "اختر لغتك",
+    "currency_title": "عملتك",
+    "selected": "المحدد",
+    "symbol_front": "الرمز أولًا",
+    "symbol_back": "الرمز آخرًا",
+    "enable_title": "فعّل Money Time",
+    "enable_subtitle": "امنح هذه الأذونات مرة واحدة ليعمل التطبيق بكامل إمكاناته. تظل أنت المتحكم.",
+    "notifications_title": "الإشعارات",
+    "notifications_desc": "سننبّهك لتأكيد أي معاملة مُسجّلة تلقائيًا عند عدم وضوحها — إضافةً إلى تنبيهات الميزانية.",
+    "shortcuts_title": "الاختصارات والأتمتة",
+    "shortcuts_desc": "تسجيل المعاملات تلقائيًا من Apple Pay وتنبيهات البنك.",
+    "personalisation_title": "التخصيص",
+    "personalisation_desc": "تحليلات اختيارية لتحسين تجربتك.",
+    "allow_continue": "السماح والمتابعة",
+    "maybe_later": "ربما لاحقًا"
   },
   "auth": {
     "log_in": "Log in",
@@ -46,5 +66,10 @@
     "sign_up_subtitle": "أنشئ حسابًا جديدًا للبدء.",
     "send_reset_link": "إرسال رابط إعادة التعيين",
     "back_to_login": "العودة لتسجيل الدخول"
+  },
+  "home": {
+    "home_title": "Home",
+    "welcome_home": "Welcome Home!",
+    "home_subtitle": "You have successfully completed the onboarding process."
   }
 }

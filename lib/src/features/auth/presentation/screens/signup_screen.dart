@@ -96,7 +96,7 @@ class _SignupBodyState extends State<_SignupBody> {
                     AuthFooterLink(
                       prompt: 'auth.already_have_account'.tr(),
                       action: 'auth.log_in'.tr(),
-                      onTap: () => context.pop(),
+                      onTap: () => context.popOrGo(AppRoutes.login),
                     ),
                     SizedBox(height: AppSpacing.xl),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'app_colors.dart';
 import 'text_theme.dart';
 import 'color_schemes.dart';
 
@@ -241,7 +242,7 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
     // Floating Action Button Theme
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimaryContainer,
+      foregroundColor: colorScheme.onPrimary,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
@@ -348,9 +349,23 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
 
 ThemeData buildLightTheme({required String primaryColorHex}) {
   final seed = _colorFromHex(primaryColorHex.isNotEmpty ? primaryColorHex : '#6750A4');
+  // Material 3 generates a harmonised palette from the seed; the roles the
+  // Figma design pins down are then overridden with their exact values.
   final colorScheme = ColorScheme.fromSeed(
     seedColor: seed,
     brightness: Brightness.light,
+  ).copyWith(
+    primary: AppColors.primary,
+    onPrimary: Colors.white,
+    // Tonal "selected" surface — the mint highlight on picked list rows.
+    primaryContainer: AppColors.primarySoft,
+    onPrimaryContainer: AppColors.primaryOnSoft,
+    secondary: AppColors.slate,
+    tertiary: AppColors.accent,
+    surface: AppColors.background,
+    onSurface: AppColors.ink,
+    onSurfaceVariant: AppColors.textMuted,
+    outlineVariant: AppColors.divider,
   );
   return _buildTheme(colorScheme, AppPalettes.light);
 }
@@ -360,6 +375,10 @@ ThemeData buildDarkTheme({required String primaryColorHex}) {
   final colorScheme = ColorScheme.fromSeed(
     seedColor: seed,
     brightness: Brightness.dark,
+  ).copyWith(
+    primary: AppColors.primaryLight,
+    onPrimary: AppColors.primaryDeep,
+    tertiary: AppColors.accent,
   );
   return _buildTheme(colorScheme, AppPalettes.dark);
 }

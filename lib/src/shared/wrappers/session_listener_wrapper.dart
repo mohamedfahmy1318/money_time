@@ -17,11 +17,14 @@ class SessionListenerWrapper extends StatelessWidget {
         if (state.status == SessionStatus.unknown) return;
 
         FlutterNativeSplash.remove();
-        if (state.status == SessionStatus.authenticated) {
-          context.go(AppRoutes.home);
-        } else {
-          context.go(AppRoutes.onboarding);
-        }
+        // Navigate through the router singleton, not `context.go`: this widget
+        // lives in `MaterialApp.router`'s builder, which sits *above*
+        // go_router's InheritedGoRouter, so `GoRouter.of(context)` throws.
+        appRouter.go(
+          state.status == SessionStatus.authenticated
+              ? AppRoutes.home
+              : AppRoutes.onboarding,
+        );
       },
       child: child,
     );

@@ -103,19 +103,27 @@ import 'package:mony_time/src/imports/packages_imports.dart'; // fpdart, bloc, d
 
 Read [DESIGN.md](DESIGN.md) in full before writing UI. Highest-leverage rules:
 
-- Theme is seeded from `#94A3B8` via `ColorScheme.fromSeed` in [theme.dart](lib/src/theme/theme.dart), with per-widget themes (buttons, inputs, cards, nav, dialogs…) already defined. Style new UI by using Material widgets and letting the theme apply — do not hand-roll `ThemeData` overrides per screen.
-- Color: `context.colors` (ColorScheme) and `context.appColors` (`success` / `warning` / `info` + container variants). No hex literals in widgets.
+- Theme is seeded from the brand emerald `#10B981` via `ColorScheme.fromSeed` in [theme.dart](lib/src/theme/theme.dart); the roles the Figma design pins down (`primary`, `surface`, `onSurface`, `onSurfaceVariant`, `outlineVariant`) are then `copyWith`-overridden to their exact values. Per-widget themes (buttons, inputs, cards, nav, dialogs…) are already defined — style new UI by using Material widgets and letting the theme apply, never hand-rolled `ThemeData` per screen.
+- Color: `context.colors` (ColorScheme) and `context.appColors` (`success` / `warning` / `info` + container variants). No hex literals in widgets. The raw Figma palette lives in [app_colors.dart](lib/src/theme/app_colors.dart) (`AppColors`) with brand sweeps in `AppGradients` — reference those two **only** when defining the theme itself or painting a gradient, never inside a feature widget.
 - Type: `context.textTheme`. Font family `Roboto` is applied app-wide; never set `fontFamily:` inline.
 - Tokens: `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves`. No magic paddings or `BorderRadius.circular(n)`.
 - Strings: `'section.key'.tr()` with keys added to **both** `assets/translations/en.json` and `ar.json`. The app supports Arabic — verify RTL.
 - Reusable widgets live in [lib/src/shared/widgets/](lib/src/shared/widgets/) (`AppButton`, `AppTextField`, `AppCard`, `AppTopBar`, `AppIcon`, `AppLoading`, `AppEmptyState`, `AppErrorWidget`, `CommonImage`, `AppCachedImage`) and are exported via `widgets.dart`. Prefer extending these over new one-off widgets. Form validation uses `AppValidators` from [validators.dart](lib/src/shared/helpers/validators.dart) — no inline validator lambdas repeating the same checks.
 - Asset paths go in [app_assets.dart](lib/src/shared/app_assets.dart) as constants.
 
-### ScreenUtil — note the baseline discrepancy
+### ScreenUtil — the baseline is the Figma artboard
 
-`ScreenUtilWrapper` defaults to **`Size(360, 690)`**, while DESIGN.md documents a 390×844 baseline. When translating a Figma frame, confirm which baseline you are scaling against; if you standardize on the Figma frame size, change the `designSize` default in [screen_util_wrapper.dart](lib/src/shared/wrappers/screen_util_wrapper.dart) once rather than compensating per screen.
+`ScreenUtilWrapper` uses **`Size(298, 672)`**, which is the design file's inner screen area (the 320×694 device mockup minus its 11 px bezel). Because the baseline equals the artboard, **every number read off Figma is used verbatim** — a 49 px button is `49.h`, a 25 px title is `25.sp`, a 22 px margin is `22.w`. No conversion math, and no per-screen fudging.
 
 Use `.w` / `.h` / `.r` / `.sp` on numeric literals. `AppSpacing` values are already `.r`-scaled getters — use `AppSpacing.lg` bare, never `AppSpacing.lg.w` (double-scales). ScreenUtil values are runtime, so widgets depending on them cannot be `const`.
+
+### Translating a Figma frame
+
+1. `get_design_context` on the node; `download_assets` (`defaultFormat: svg`) for illustrations.
+2. Exported SVGs carry the mockup's ancestors — the gray placeholder rect and the phone-frame rounded rects. **Strip everything down to the inner `<g id="SVG">` group** before committing, or the asset renders a full phone frame.
+3. Save to `assets/images/`, register the path in [app_assets.dart](lib/src/shared/app_assets.dart).
+4. Prefer flow layout (`Column` + `Spacer`) over the absolute positions Figma emits; take spacing values from the gaps between the absolute boxes.
+5. Letter-spacing from Latin text must not be applied in RTL — it breaks Arabic cursive joins. Guard with `Directionality.of(context)` (see [splash_screen.dart](lib/src/features/splash/presentation/screens/splash_screen.dart)).
 
 ### Screen pattern
 

@@ -50,7 +50,7 @@ class _ForgotPasswordBodyState extends State<_ForgotPasswordBody> {
       case AuthStatus.resetLinkSent:
         showToast(context,
             message: 'auth.reset_link_sent'.tr(), status: 'success');
-        context.pop();
+        context.popOrGo(AppRoutes.login);
       default:
         break;
     }
@@ -83,7 +83,7 @@ class _ForgotPasswordBodyState extends State<_ForgotPasswordBody> {
                     ),
                     SizedBox(height: AppSpacing.xxxl),
                     TextButton(
-                      onPressed: () => context.pop(),
+                      onPressed: () => context.popOrGo(AppRoutes.login),
                       child: Text(
                         'auth.back_to_login'.tr(),
                         style: context.textTheme.labelLarge?.copyWith(

@@ -1,19 +1,39 @@
 {
+  "app_name": "Money Time",
   "shared": {
-    "get_started": "Get Started"
+    "get_started": "Get Started",
+    "continue_action": "Continue"
+  },
+  "splash": {
+    "tagline": "TIME YOUR MONEY"
   },
   "onboarding": {
-    "onboarding_title_1": "Your Journey,\nPerfectly Planned",
-    "onboarding_subtitle_1": "Effortlessly create and organize your\ndream trips. Start exploring now!",
-    "onboarding_title_2": "Discover\nFriends Nearby",
-    "onboarding_subtitle_2": "See where your friends are traveling and\nexplore the world together.",
-    "onboarding_title_3": "Stay Updated\nwith Top Places",
-    "onboarding_subtitle_3": "Find trending destinations and must-see attractions,\nall tailored to enhance your travel plans."
+    "track_title": "Track every pound",
+    "track_subtitle": "See income, expenses and balance across all your accounts in one calm place.",
+    "budget_title": "Budget with ease",
+    "budget_subtitle": "Set weekly, monthly or yearly budgets and watch every category in real time.",
+    "goals_title": "Reach your goals",
+    "goals_subtitle": "Set savings goals, watch them grow, and let auto-save do the work in the background.",
+    "already_have_account": "I already have an account"
   },
-  "home": {
-    "home_title": "Home",
-    "welcome_home": "Welcome Home!",
-    "home_subtitle": "You have successfully completed the onboarding process."
+  "setup": {
+    "auto_detected": "Auto-detected · tap to change",
+    "auto_device": "🌐  Auto (device)",
+    "language_title": "Choose your language",
+    "currency_title": "Your Currency",
+    "selected": "Selected",
+    "symbol_front": "Symbol front",
+    "symbol_back": "Symbol back",
+    "enable_title": "Enable Money Time",
+    "enable_subtitle": "Grant these once so the app works its magic. You stay in control.",
+    "notifications_title": "Notifications",
+    "notifications_desc": "We'll ping you to confirm an auto-logged transaction when it isn't clear — plus budget alerts.",
+    "shortcuts_title": "Shortcuts & Automation",
+    "shortcuts_desc": "Auto-log transactions from Apple Pay & bank alerts.",
+    "personalisation_title": "Personalisation",
+    "personalisation_desc": "Optional analytics to improve your experience.",
+    "allow_continue": "Allow & Continue",
+    "maybe_later": "Maybe later"
   },
   "auth": {
     "log_in": "Log in",
@@ -46,5 +66,10 @@
     "sign_up_subtitle": "Create a new account to get started.",
     "send_reset_link": "Send Reset Link",
     "back_to_login": "Back to Login"
+  },
+  "home": {
+    "home_title": "Home",
+    "welcome_home": "Welcome Home!",
+    "home_subtitle": "You have successfully completed the onboarding process."
   }
 }

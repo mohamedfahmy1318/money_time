@@ -125,6 +125,22 @@ extension ContextExtension on BuildContext {
   }
 
   // ── Routing shortcuts ────────────────────────────────────────────────────
+
+  /// Pops the current route, falling back to [fallbackRoute] when the stack is
+  /// empty.
+  ///
+  /// A screen can be reached either by `push` (stack has a previous entry) or
+  /// by `go` (stack was replaced). Calling `pop` in the second case throws
+  /// "There is nothing to pop", so any back affordance on a screen that both
+  /// paths reach must go through here.
+  void popOrGo(String fallbackRoute) {
+    if (canPop()) {
+      pop();
+    } else {
+      go(fallbackRoute);
+    }
+  }
+
   String get currentRoute {
     final router = GoRouter.of(this);
     final RouteMatch lastMatch = router.routerDelegate.currentConfiguration.last;

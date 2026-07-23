@@ -13,8 +13,8 @@ class App extends StatelessWidget {
     return MaterialApp.router(
       title: 'mony_time',
       debugShowCheckedModeBanner: false,
-      theme: buildLightTheme(primaryColorHex: '#94A3B8'),
-      darkTheme: buildDarkTheme(primaryColorHex: '#94A3B8'),
+      theme: buildLightTheme(primaryColorHex: '#10B981'),
+      darkTheme: buildDarkTheme(primaryColorHex: '#10B981'),
       themeMode: ThemeMode.system,
       routerConfig: appRouter,
       localizationsDelegates: context.localizationDelegates,

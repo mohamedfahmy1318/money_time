@@ -8,16 +8,40 @@ import 'package:mony_time/src/features/auth/presentation/screens/forgot_password
 
 import 'package:mony_time/src/features/home/presentation/screens/home_page.dart';
 import 'package:mony_time/src/features/onboarding/presentation/screens/onboarding_page.dart';
+import 'package:mony_time/src/features/splash/presentation/screens/splash_screen.dart';
+import 'package:mony_time/src/features/setup/presentation/screens/language_screen.dart';
+import 'package:mony_time/src/features/setup/presentation/screens/currency_screen.dart';
+import 'package:mony_time/src/features/setup/presentation/screens/enable_features_screen.dart';
 
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppRoutes.onboarding,
+  initialLocation: AppRoutes.splash,
   routes: <RouteBase>[
+    GoRoute(
+      path: AppRoutes.splash,
+      name: 'splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: AppRoutes.onboarding,
       name: 'onboarding',
       builder: (context, state) => const OnboardingPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.language,
+      name: 'language',
+      builder: (context, state) => const LanguageScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.currency,
+      name: 'currency',
+      builder: (context, state) => const CurrencyScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.enableFeatures,
+      name: 'enableFeatures',
+      builder: (context, state) => const EnableFeaturesScreen(),
     ),
     GoRoute(
       path: AppRoutes.login,

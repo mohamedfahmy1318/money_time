@@ -23,8 +23,11 @@ abstract final class AppBorders {
   /// 16 pt — large rounding for modals, bottom sheets.
   static const BorderRadius lg = BorderRadius.all(Radius.circular(16));
 
+  /// 20 pt — rounded content cards (setup lists, permission card).
+  static const BorderRadius xl = BorderRadius.all(Radius.circular(20));
+
   /// 24 pt — extra large rounding for dialogs, feature cards.
-  static const BorderRadius xl = BorderRadius.all(Radius.circular(24));
+  static const BorderRadius xxxl = BorderRadius.all(Radius.circular(24));
 
   /// 28 pt — Material 3 bottom sheet top radius.
   static const BorderRadius bottomSheet = BorderRadius.vertical(
@@ -46,7 +49,7 @@ abstract final class AppBorders {
   static const BorderRadius input = sm;
 
   /// Default dialog border radius.
-  static const BorderRadius dialog = xl;
+  static const BorderRadius dialog = xxxl;
 
   // ── RoundedRectangleBorder shapes (for ShapeBorder APIs) ─────────────────
 
