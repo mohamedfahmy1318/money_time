@@ -1,8 +1,11 @@
 import 'package:mony_time/src/imports/core_imports.dart';
+import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/presentation/widgets/password_field.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/terms_checkbox.dart';
 
-/// Name + email + password + confirm-password form with submit.
+/// Registration block: name, email, password, the terms agreement, and the
+/// Create Account action.
 class SignupFormSection extends StatelessWidget {
   const SignupFormSection({
     super.key,
@@ -10,8 +13,9 @@ class SignupFormSection extends StatelessWidget {
     required this.nameController,
     required this.emailController,
     required this.passwordController,
-    required this.confirmPasswordController,
     required this.isLoading,
+    required this.agreedToTerms,
+    required this.onAgreedChanged,
     required this.onSubmit,
   });
 
@@ -19,8 +23,9 @@ class SignupFormSection extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
   final bool isLoading;
+  final bool agreedToTerms;
+  final ValueChanged<bool> onAgreedChanged;
   final VoidCallback onSubmit;
 
   @override
@@ -28,46 +33,37 @@ class SignupFormSection extends StatelessWidget {
     return Form(
       key: formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppTextField(
             controller: nameController,
             enabled: !isLoading,
-            label: 'auth.name'.tr(),
+            hint: 'auth.full_name'.tr(),
             textInputAction: TextInputAction.next,
-            prefixIcon: const Icon(Icons.person_outline),
             validator: AppValidators.name,
           ),
-          SizedBox(height: AppSpacing.md),
+          SizedBox(height: 11.h),
           AppTextField(
             controller: emailController,
             enabled: !isLoading,
-            label: 'auth.email'.tr(),
+            hint: 'auth.email_address'.tr(),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            prefixIcon: const Icon(Icons.email_outlined),
             validator: AppValidators.email,
           ),
-          SizedBox(height: AppSpacing.md),
+          SizedBox(height: 11.h),
           PasswordField(
             controller: passwordController,
             enabled: !isLoading,
-            textInputAction: TextInputAction.next,
-          ),
-          SizedBox(height: AppSpacing.md),
-          PasswordField(
-            controller: confirmPasswordController,
-            enabled: !isLoading,
-            label: 'auth.confirm_password'.tr(),
             textInputAction: TextInputAction.done,
-            validator:
-                AppValidators.confirmPassword(() => passwordController.text),
           ),
-          SizedBox(height: AppSpacing.lg),
-          AppButton(
-            label: 'auth.sign_up'.tr(),
+          SizedBox(height: 14.h),
+          TermsCheckbox(value: agreedToTerms, onChanged: onAgreedChanged),
+          SizedBox(height: 14.h),
+          AppGradientButton(
+            label: 'auth.create_account_button'.tr(),
             isLoading: isLoading,
             onPressed: isLoading ? null : onSubmit,
-            width: ButtonSize.large,
           ),
         ],
       ),

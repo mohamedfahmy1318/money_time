@@ -7,11 +7,13 @@ class AppAssets {
 
   // Social icons
   static const String googleIcon = '$_iconsPath/google.svg';
+  static const String googleColorIcon = '$_iconsPath/google_color.svg';
   static const String facebookIcon = '$_iconsPath/facebook.svg';
   static const String appleIcon = '$_iconsPath/apple.svg';
 
   // Brand
   static const String logo = '$_imagesPath/logo_money_time.svg';
+  static const String logoMarkDark = '$_imagesPath/logo_mark_dark.svg';
 
   // Onboarding illustrations
   static const String onboardingTrack = '$_imagesPath/onboarding_track.svg';

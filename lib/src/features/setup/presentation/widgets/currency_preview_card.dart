@@ -51,7 +51,7 @@ class CurrencyPreviewCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

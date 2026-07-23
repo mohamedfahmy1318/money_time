@@ -179,30 +179,35 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
       color: colorScheme.surfaceContainerLow,
     ),
 
-    // Input Decoration Theme
+    // Input Decoration Theme — white field, hairline border, hint-only
+    // (the Figma design uses placeholders, not floating labels).
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        
-        borderSide: BorderSide(color: colorScheme.outline),
+      fillColor: colorScheme.surfaceContainerLowest,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: AppColors.inputBorder),
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.outline),
+      enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: AppColors.inputBorder),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        borderRadius: const BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: const BorderRadius.all(Radius.circular(14)),
         borderSide: BorderSide(color: colorScheme.error),
       ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: colorScheme.error, width: 1.5),
+      ),
       floatingLabelStyle: TextStyle(color: colorScheme.primary),
-      labelStyle: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
-      hintStyle: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+      hintStyle: textTheme.bodyMedium?.copyWith(color: AppColors.hint),
     ),
 
     // Navigation Bar Theme

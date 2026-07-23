@@ -88,6 +88,12 @@ Everything async that can fail goes through `runTask()` in [lib/src/utils/task_r
 
 All routes in [app_router.dart](lib/src/routing/app_router.dart); all paths as constants in [app_routes.dart](lib/src/routing/app_routes.dart). Never hard-code a path string. `SessionListenerWrapper` performs the global authenticated→`home` / unauthenticated→`onboarding` redirect on session status change; per-route guards belong in the router config, not in screens.
 
+First-run flow: `splash → onboarding → language → currency → enable-features → login`. `SessionListenerWrapper` runs in `MaterialApp.router`'s builder, which sits **above** go_router's `InheritedGoRouter`, so it navigates via the `appRouter` singleton, not `context.go`. Screens reached by both `push` and `go` must use `context.popOrGo(fallback)` for their back affordance — a bare `context.pop()` throws "nothing to pop" when the stack was replaced by `go`.
+
+### Presentation-only features
+
+`onboarding` and `setup` (language / currency / enable-features) have **no domain or data layer** — they only record first-run preferences. They skip cubits too: each screen is a plain `StatefulWidget` with local `setState`, matching the onboarding precedent. Add a cubit only when a screen gains real async work. Language selection is the one live side effect — it calls `context.setLocale` (easy_localization persists it) for the supported locales (en/ar); other languages in the Figma list are display-only until their translations exist.
+
 ### Imports — use the barrels
 
 Almost every file starts with one or both of:
@@ -108,7 +114,8 @@ Read [DESIGN.md](DESIGN.md) in full before writing UI. Highest-leverage rules:
 - Type: `context.textTheme`. Font family `Roboto` is applied app-wide; never set `fontFamily:` inline.
 - Tokens: `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves`. No magic paddings or `BorderRadius.circular(n)`.
 - Strings: `'section.key'.tr()` with keys added to **both** `assets/translations/en.json` and `ar.json`. The app supports Arabic — verify RTL.
-- Reusable widgets live in [lib/src/shared/widgets/](lib/src/shared/widgets/) (`AppButton`, `AppTextField`, `AppCard`, `AppTopBar`, `AppIcon`, `AppLoading`, `AppEmptyState`, `AppErrorWidget`, `CommonImage`, `AppCachedImage`) and are exported via `widgets.dart`. Prefer extending these over new one-off widgets. Form validation uses `AppValidators` from [validators.dart](lib/src/shared/helpers/validators.dart) — no inline validator lambdas repeating the same checks.
+- Reusable widgets live in [lib/src/shared/widgets/](lib/src/shared/widgets/) (`AppButton`, `AppGradientButton`, `AppTextField`, `AppCard`, `AppTopBar`, `AppIcon`, `AppLoading`, `AppEmptyState`, `AppErrorWidget`, `CommonImage`, `AppCachedImage`) and are exported via `widgets.dart`. Prefer extending these over new one-off widgets. `AppGradientButton` is the emerald primary CTA (gradient + glow); `AppButton` covers flat/outline/ghost variants. Form validation uses `AppValidators` from [validators.dart](lib/src/shared/helpers/validators.dart) — no inline validator lambdas repeating the same checks.
+- Inputs are **hint-based, not floating-label** — the global `InputDecorationTheme` is a white fill with a `#E2E8F0` hairline border and a `#9AA8B8` placeholder (radius 14). Pass `hint:` to `AppTextField`, not `label:`.
 - Asset paths go in [app_assets.dart](lib/src/shared/app_assets.dart) as constants.
 
 ### ScreenUtil — the baseline is the Figma artboard

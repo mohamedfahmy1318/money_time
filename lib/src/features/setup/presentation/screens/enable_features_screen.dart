@@ -32,9 +32,9 @@ class _EnableFeaturesScreenState extends State<EnableFeaturesScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 12.h),
                       const _HeaderIcon(),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 14.h),
                       Text(
                         'setup.enable_title'.tr(),
                         textAlign: TextAlign.center,
@@ -44,7 +44,7 @@ class _EnableFeaturesScreenState extends State<EnableFeaturesScreen> {
                           fontSize: 21.sp,
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      SizedBox(height: 6.h),
                       Text(
                         'setup.enable_subtitle'.tr(),
                         textAlign: TextAlign.center,
@@ -54,7 +54,7 @@ class _EnableFeaturesScreenState extends State<EnableFeaturesScreen> {
                           height: 1.35,
                         ),
                       ),
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 16.h),
                       SetupCard(
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15.w),

@@ -3,8 +3,9 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/presentation/widgets/password_field.dart';
 
-/// Email + password form with remember-me / forgot-password row and submit.
-class LoginFormSection extends StatefulWidget {
+/// Credentials block: email, password, the forgot-password link, and the
+/// primary Log In action.
+class LoginFormSection extends StatelessWidget {
   const LoginFormSection({
     super.key,
     required this.formKey,
@@ -12,6 +13,7 @@ class LoginFormSection extends StatefulWidget {
     required this.passwordController,
     required this.isLoading,
     required this.onSubmit,
+    required this.onForgot,
   });
 
   final GlobalKey<FormState> formKey;
@@ -19,75 +21,48 @@ class LoginFormSection extends StatefulWidget {
   final TextEditingController passwordController;
   final bool isLoading;
   final VoidCallback onSubmit;
-
-  @override
-  State<LoginFormSection> createState() => _LoginFormSectionState();
-}
-
-class _LoginFormSectionState extends State<LoginFormSection> {
-  bool _rememberMe = true;
+  final VoidCallback onForgot;
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: widget.formKey,
+      key: formKey,
       child: Column(
         children: [
           AppTextField(
-            controller: widget.emailController,
-            enabled: !widget.isLoading,
-            label: 'auth.email'.tr(),
+            controller: emailController,
+            enabled: !isLoading,
+            hint: 'auth.email_address'.tr(),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            prefixIcon: const Icon(Icons.email_outlined),
             validator: AppValidators.email,
           ),
-          SizedBox(height: AppSpacing.md),
+          SizedBox(height: 12.h),
           PasswordField(
-            controller: widget.passwordController,
-            enabled: !widget.isLoading,
+            controller: passwordController,
+            enabled: !isLoading,
             textInputAction: TextInputAction.done,
           ),
-          SizedBox(height: AppSpacing.sm),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                spacing: 5.w,
-                children: [
-                  SizedBox(
-                    width: 20.w,
-                    height: 20.h,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      onChanged: (value) =>
-                          setState(() => _rememberMe = value ?? false),
-                    ),
-                  ),
-                  Text(
-                    'auth.remember_me'.tr(),
-                    style: context.textTheme.bodySmall
-                        ?.copyWith(color: context.colors.onSurfaceVariant),
-                  ),
-                ],
-              ),
-              TextButton(
-                style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                onPressed: () => context.push(AppRoutes.forgotPassword),
-                child: Text(
-                  'auth.forgot_password'.tr(),
-                  style: context.textTheme.bodySmall
-                      ?.copyWith(color: context.colors.onSurfaceVariant),
+          SizedBox(height: 12.h),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: GestureDetector(
+              onTap: onForgot,
+              child: Text(
+                'auth.forgot_password'.tr(),
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: context.colors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
                 ),
               ),
-            ],
+            ),
           ),
-          SizedBox(height: AppSpacing.lg),
-          AppButton(
-            label: 'auth.sign_in'.tr(),
-            isLoading: widget.isLoading,
-            onPressed: widget.isLoading ? null : widget.onSubmit,
-            width: ButtonSize.large,
+          SizedBox(height: 12.h),
+          AppGradientButton(
+            label: 'auth.log_in_button'.tr(),
+            isLoading: isLoading,
+            onPressed: isLoading ? null : onSubmit,
           ),
         ],
       ),

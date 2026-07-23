@@ -18,7 +18,7 @@
   },
   "setup": {
     "auto_detected": "Auto-detected · tap to change",
-    "auto_device": "🌐  Auto (device)",
+    "auto_device": "Auto (device)",
     "language_title": "Choose your language",
     "currency_title": "Your Currency",
     "selected": "Selected",
@@ -45,7 +45,7 @@
     "password_required": "Password is required",
     "password_too_short": "Password must be at least 6 characters",
     "remember_me": "Remember me",
-    "forgot_password": "Forgot Password",
+    "forgot_password": "Forgot password?",
     "login_button": "Login",
     "dont_have_account": "Don't have an account? ",
     "sign_up": "Sign Up",
@@ -65,7 +65,19 @@
     "reset_link_sent": "Password reset link sent to your email.",
     "sign_up_subtitle": "Create a new account to get started.",
     "send_reset_link": "Send Reset Link",
-    "back_to_login": "Back to Login"
+    "back_to_login": "Back to Login",
+    "welcome_back": "Welcome back",
+    "log_in_to_continue": "Log in to continue",
+    "log_in_button": "Log In",
+    "email_address": "Email address",
+    "full_name": "Full name",
+    "or": "or",
+    "continue_google": "Continue with Google",
+    "continue_apple": "Continue with Apple",
+    "create_account_title": "Create account",
+    "start_managing": "Start managing your money",
+    "agree_terms": "I agree to the Terms & Privacy",
+    "must_agree_terms": "Please accept the Terms & Privacy"
   },
   "home": {
     "home_title": "Home",

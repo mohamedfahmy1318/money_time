@@ -18,7 +18,7 @@
   },
   "setup": {
     "auto_detected": "تم الاكتشاف تلقائيًا · اضغط للتغيير",
-    "auto_device": "🌐  تلقائي (الجهاز)",
+    "auto_device": "تلقائي (الجهاز)",
     "language_title": "اختر لغتك",
     "currency_title": "عملتك",
     "selected": "المحدد",
@@ -45,7 +45,7 @@
     "password_required": "Password is required",
     "password_too_short": "Password must be at least 6 characters",
     "remember_me": "Remember me",
-    "forgot_password": "Forgot Password",
+    "forgot_password": "نسيت كلمة المرور؟",
     "login_button": "Login",
     "dont_have_account": "Don't have an account? ",
     "sign_up": "Sign Up",
@@ -65,7 +65,19 @@
     "reset_link_sent": "Password reset link sent to your email.",
     "sign_up_subtitle": "أنشئ حسابًا جديدًا للبدء.",
     "send_reset_link": "إرسال رابط إعادة التعيين",
-    "back_to_login": "العودة لتسجيل الدخول"
+    "back_to_login": "العودة لتسجيل الدخول",
+    "welcome_back": "مرحبًا بعودتك",
+    "log_in_to_continue": "سجّل الدخول للمتابعة",
+    "log_in_button": "تسجيل الدخول",
+    "email_address": "البريد الإلكتروني",
+    "full_name": "الاسم الكامل",
+    "or": "أو",
+    "continue_google": "المتابعة عبر Google",
+    "continue_apple": "المتابعة عبر Apple",
+    "create_account_title": "إنشاء حساب",
+    "start_managing": "ابدأ إدارة أموالك",
+    "agree_terms": "أوافق على الشروط والخصوصية",
+    "must_agree_terms": "يرجى الموافقة على الشروط والخصوصية"
   },
   "home": {
     "home_title": "Home",

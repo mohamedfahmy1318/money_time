@@ -5,9 +5,11 @@ import 'package:mony_time/src/features/auth/auth_di.dart';
 import 'package:mony_time/src/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
 import 'package:mony_time/src/features/auth/presentation/sections/login_form_section.dart';
-import 'package:mony_time/src/features/auth/presentation/sections/social_login_section.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_footer_link.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_header.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/auth_logo.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/auth_or_divider.dart';
+import 'package:mony_time/src/features/auth/presentation/widgets/social_auth_button.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -68,35 +70,59 @@ class _LoginBodyState extends State<_LoginBody> {
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Column(
-                  children: [
-                    SizedBox(height: AppSpacing.xl),
-                    AuthHeader(
-                      title: 'auth.log_in'.tr(),
-                      subtitle: 'auth.log_in_subtitle'.tr(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 26.h),
+                          const AuthLogo(),
+                          SizedBox(height: 27.h),
+                          AuthHeader(
+                            title: 'auth.welcome_back'.tr(),
+                            subtitle: 'auth.log_in_to_continue'.tr(),
+                          ),
+                          SizedBox(height: 25.h),
+                          LoginFormSection(
+                            formKey: _formKey,
+                            emailController: _emailController,
+                            passwordController: _passwordController,
+                            isLoading: state.isLoading,
+                            onSubmit: _submit,
+                            onForgot: () =>
+                                context.push(AppRoutes.forgotPassword),
+                          ),
+                          SizedBox(height: 17.h),
+                          const AuthOrDivider(),
+                          SizedBox(height: 18.h),
+                          SocialAuthButton(
+                            asset: AppAssets.googleColorIcon,
+                            dark: false,
+                            label: 'auth.continue_google'.tr(),
+                            onPressed: () {},
+                          ),
+                          SizedBox(height: 12.h),
+                          SocialAuthButton(
+                            asset: AppAssets.appleIcon,
+                            dark: true,
+                            label: 'auth.continue_apple'.tr(),
+                            onPressed: () {},
+                          ),
+                          SizedBox(height: 20.h),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: AppSpacing.xxxl),
-                    LoginFormSection(
-                      formKey: _formKey,
-                      emailController: _emailController,
-                      passwordController: _passwordController,
-                      isLoading: state.isLoading,
-                      onSubmit: _submit,
-                    ),
-                    SizedBox(height: AppSpacing.xxxl),
-                    const SocialLoginSection(),
-                    SizedBox(height: AppSpacing.xl),
-                    AuthFooterLink(
-                      prompt: 'auth.dont_have_account'.tr(),
-                      action: 'auth.sign_up'.tr(),
-                      onTap: () => context.push(AppRoutes.signup),
-                    ),
-                    SizedBox(height: AppSpacing.xl),
-                  ],
-                ),
+                  ),
+                  AuthFooterLink(
+                    prompt: 'auth.dont_have_account'.tr(),
+                    action: 'auth.sign_up'.tr(),
+                    onTap: () => context.push(AppRoutes.signup),
+                  ),
+                  SizedBox(height: 16.h),
+                ],
               ),
             ),
           ),

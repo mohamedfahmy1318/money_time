@@ -24,18 +24,16 @@ class ForgotPasswordFormSection extends StatelessWidget {
           AppTextField(
             controller: emailController,
             enabled: !isLoading,
-            label: 'auth.email'.tr(),
+            hint: 'auth.email_address'.tr(),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
-            prefixIcon: const Icon(Icons.email_outlined),
             validator: AppValidators.email,
           ),
           SizedBox(height: AppSpacing.lg),
-          AppButton(
+          AppGradientButton(
             label: 'auth.send_reset_link'.tr(),
             isLoading: isLoading,
             onPressed: isLoading ? null : onSubmit,
-            width: ButtonSize.large,
           ),
         ],
       ),

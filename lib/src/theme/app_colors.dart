@@ -47,6 +47,12 @@ abstract final class AppColors {
   /// Hairlines, inactive page dots, dividers.
   static const Color divider = Color(0xFFEAF0F4);
 
+  /// Input field outline (slightly stronger than [divider]).
+  static const Color inputBorder = Color(0xFFE2E8F0);
+
+  /// Placeholder / hint text inside inputs.
+  static const Color hint = Color(0xFF9AA8B8);
+
   // ── Supporting palette ─────────────────────────────────────────────────────
   /// Slate — neutral secondary from the brand sheet.
   static const Color slate = Color(0xFF94A3B8);

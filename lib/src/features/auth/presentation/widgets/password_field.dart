@@ -1,4 +1,5 @@
 import 'package:mony_time/src/imports/core_imports.dart';
+import 'package:mony_time/src/imports/packages_imports.dart';
 
 /// [AppTextField] specialized for passwords — owns its obscure toggle so
 /// screens don't carry that state.
@@ -30,13 +31,16 @@ class _PasswordFieldState extends State<PasswordField> {
     return AppTextField(
       controller: widget.controller,
       enabled: widget.enabled,
-      label: widget.label ?? 'auth.password'.tr(),
+      hint: widget.label ?? 'auth.password'.tr(),
       obscureText: _obscure,
       validator: widget.validator ?? AppValidators.password,
       textInputAction: widget.textInputAction,
-      prefixIcon: const Icon(Icons.lock_outline),
       suffixIcon: IconButton(
-        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+        icon: Icon(
+          _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+          color: context.colors.onSurfaceVariant,
+          size: 18.sp,
+        ),
         onPressed: () => setState(() => _obscure = !_obscure),
       ),
     );
