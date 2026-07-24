@@ -17,4 +17,6 @@ abstract final class AppRoutes {
   static const String connectShortcuts = '/connect-shortcuts';
   static const String allSet = '/all-set';
   static const String addTransaction = '/add-transaction';
+  static const String categoryPicker = '/category-picker';
+  static const String addCategory = '/add-category';
 }

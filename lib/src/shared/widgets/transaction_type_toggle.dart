@@ -1,19 +1,33 @@
-import 'package:mony_time/src/imports/core_imports.dart';
-import 'package:mony_time/src/imports/packages_imports.dart';
+import '../../imports/core_imports.dart';
+import '../../imports/packages_imports.dart';
 
-import 'package:mony_time/src/features/transactions/presentation/models/transaction_type.dart';
+/// Visual style of the selected segment.
+enum SegmentedToggleStyle {
+  /// Emerald gradient pill with white text (add-transaction).
+  gradient,
 
-/// Segmented Income / Expense control. The selected side is an emerald gradient
-/// pill; the other is a muted label on the page background.
+  /// White pill with a soft shadow and ink text (category screens).
+  soft,
+}
+
+/// Segmented Income / Expense control on a page-coloured track. The selected
+/// side is highlighted per [style]; the other is a muted label.
 class TransactionTypeToggle extends StatelessWidget {
   const TransactionTypeToggle({
     super.key,
     required this.value,
     required this.onChanged,
+    this.style = SegmentedToggleStyle.gradient,
+    this.order = const [TransactionType.income, TransactionType.expense],
   });
 
   final TransactionType value;
   final ValueChanged<TransactionType> onChanged;
+  final SegmentedToggleStyle style;
+
+  /// Left-to-right ordering of the two segments (Figma flips it between
+  /// screens).
+  final List<TransactionType> order;
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +40,12 @@ class TransactionTypeToggle extends StatelessWidget {
       ),
       child: Row(
         children: [
-          for (final type in TransactionType.values)
+          for (final type in order)
             Expanded(
               child: _Segment(
                 label: type.label,
                 selected: type == value,
+                style: style,
                 onTap: () => onChanged(type),
               ),
             ),
@@ -44,15 +59,26 @@ class _Segment extends StatelessWidget {
   const _Segment({
     required this.label,
     required this.selected,
+    required this.style,
     required this.onTap,
   });
 
   final String label;
   final bool selected;
+  final SegmentedToggleStyle style;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final isGradient = style == SegmentedToggleStyle.gradient;
+
+    final Color textColor;
+    if (!selected) {
+      textColor = context.colors.onSurfaceVariant;
+    } else {
+      textColor = isGradient ? Colors.white : context.colors.onSurface;
+    }
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -61,7 +87,10 @@ class _Segment extends StatelessWidget {
         curve: AppCurves.standard,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          gradient: selected ? AppGradients.primaryButton : null,
+          color: selected && !isGradient
+              ? context.colors.surfaceContainerLowest
+              : null,
+          gradient: selected && isGradient ? AppGradients.primaryButton : null,
           borderRadius: BorderRadius.circular(11.r),
           boxShadow: selected
               ? [
@@ -76,7 +105,7 @@ class _Segment extends StatelessWidget {
         child: Text(
           label,
           style: context.textTheme.labelLarge?.copyWith(
-            color: selected ? Colors.white : context.colors.onSurfaceVariant,
+            color: textColor,
             fontWeight: FontWeight.bold,
             fontSize: 12.5.sp,
           ),

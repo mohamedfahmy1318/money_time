@@ -1,6 +1,7 @@
-import 'package:mony_time/src/imports/core_imports.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-/// Whether a transaction adds money (income) or removes it (expense).
+/// Whether a transaction (or a category) adds money (income) or removes it
+/// (expense). Shared across the transactions and categories features.
 enum TransactionType {
   income,
   expense;

@@ -1,11 +1,10 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/categories/presentation/models/category.dart';
 import 'package:mony_time/src/features/transactions/presentation/models/keypad_key.dart';
-import 'package:mony_time/src/features/transactions/presentation/models/transaction_type.dart';
 import 'package:mony_time/src/features/transactions/presentation/sections/amount_keypad.dart';
 import 'package:mony_time/src/features/transactions/presentation/sections/transaction_details.dart';
-import 'package:mony_time/src/features/transactions/presentation/sections/transaction_type_toggle.dart';
 import 'package:mony_time/src/features/transactions/presentation/widgets/note_sheet.dart';
 
 /// Add a transaction: pick a type, enter an amount on the keypad, and optionally
@@ -21,10 +20,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TransactionType _type = TransactionType.expense;
   String _amount = '120.50';
   String _note = '';
+  String _category = '🛒 Groceries';
 
-  // Placeholder values until date/category pickers are wired up.
+  // Placeholder until the date picker is wired up.
   static const _date = 'Wed, 15 Jul 2026';
-  static const _category = '🛒 Groceries';
 
   /// True until the user first touches the keypad, so the seeded sample amount
   /// is cleared on the first digit rather than appended to.
@@ -71,6 +70,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     context.popOrGo(AppRoutes.home);
   }
 
+  Future<void> _pickCategory() async {
+    final result =
+        await context.push<AppCategory>(AppRoutes.categoryPicker);
+    if (result != null) {
+      setState(() => _category = '${result.emoji} ${result.label}');
+    }
+  }
+
   void _comingSoon() => showToast(
         context,
         message: 'transactions.coming_soon'.tr(),
@@ -109,7 +116,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     category: _category,
                     hasNote: _note.isNotEmpty,
                     onTapDate: _comingSoon,
-                    onTapCategory: _comingSoon,
+                    onTapCategory: _pickCategory,
                     onAddNote: _addNote,
                   ),
                 ],

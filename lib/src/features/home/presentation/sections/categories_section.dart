@@ -18,7 +18,7 @@ class CategoriesSection extends StatelessWidget {
         SectionHeader(
           title: 'home.categories'.tr(),
           action: 'home.manage'.tr(),
-          onAction: () {},
+          onAction: () => context.push(AppRoutes.categoryPicker),
         ),
         SizedBox(height: 14.h),
         Row(
@@ -37,7 +37,7 @@ class CategoriesSection extends StatelessWidget {
             Expanded(
               child: CategoryChip.add(
                 label: 'home.add'.tr(),
-                onTap: () {},
+                onTap: () => context.push(AppRoutes.addCategory),
               ),
             ),
           ],

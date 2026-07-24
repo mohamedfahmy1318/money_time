@@ -15,6 +15,8 @@ import 'package:mony_time/src/features/setup/presentation/screens/enable_feature
 import 'package:mony_time/src/features/welcome/presentation/screens/connect_shortcuts_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/all_set_screen.dart';
 import 'package:mony_time/src/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:mony_time/src/features/categories/presentation/screens/add_category_screen.dart';
+import 'package:mony_time/src/features/categories/presentation/screens/category_picker_screen.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
 
@@ -82,6 +84,17 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.addTransaction,
       name: 'addTransaction',
       builder: (context, state) => const AddTransactionScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.categoryPicker,
+      name: 'categoryPicker',
+      builder: (context, state) =>
+          CategoryPickerScreen(selectedLabel: state.extra as String?),
+    ),
+    GoRoute(
+      path: AppRoutes.addCategory,
+      name: 'addCategory',
+      builder: (context, state) => const AddCategoryScreen(),
     ),
   ],
 );

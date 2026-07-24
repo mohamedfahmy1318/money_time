@@ -120,5 +120,15 @@
     "save_note": "Save Note",
     "saved": "Transaction saved",
     "coming_soon": "Coming soon"
+  },
+  "categories": {
+    "add_title": "Add Category",
+    "picker_title": "Category",
+    "tap_to_choose": "Tap to choose icon",
+    "name_hint": "Category name",
+    "color": "COLOR",
+    "save": "Save Category",
+    "add": "Add",
+    "saved": "Category saved"
   }
 }

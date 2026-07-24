@@ -120,5 +120,15 @@
     "save_note": "حفظ الملاحظة",
     "saved": "تم حفظ المعاملة",
     "coming_soon": "قريبًا"
+  },
+  "categories": {
+    "add_title": "إضافة فئة",
+    "picker_title": "الفئة",
+    "tap_to_choose": "اضغط لاختيار الأيقونة",
+    "name_hint": "اسم الفئة",
+    "color": "اللون",
+    "save": "حفظ الفئة",
+    "add": "إضافة",
+    "saved": "تم حفظ الفئة"
   }
 }

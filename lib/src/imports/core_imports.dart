@@ -21,5 +21,7 @@ export '../features/auth/presentation/screens/signup_screen.dart';
 export '../features/auth/presentation/screens/forgot_password_screen.dart';
 export '../features/home/presentation/screens/main_screen.dart';
 export '../features/transactions/presentation/screens/add_transaction_screen.dart';
+export '../features/categories/presentation/screens/add_category_screen.dart';
+export '../features/categories/presentation/screens/category_picker_screen.dart';
 export '../features/onboarding/presentation/screens/onboarding_page.dart';
 export '../features/splash/presentation/screens/splash_screen.dart';
