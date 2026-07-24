@@ -66,6 +66,16 @@ abstract final class AppColors {
 
   /// Amber highlight used inside illustrations (star, add button).
   static const Color amber = Color(0xFFFBBF24);
+
+  // ── Category tile tints ──────────────────────────────────────────────────
+  /// Mint tile — reuses [primarySoft].
+  static const Color tintMint = primarySoft;
+
+  /// Blue tile.
+  static const Color tintBlue = Color(0xFFE7F0FE);
+
+  /// Orange tile.
+  static const Color tintOrange = Color(0xFFFEF3E2);
 }
 
 /// Brand gradients. Kept beside the palette so both stay in sync.
@@ -89,5 +99,17 @@ abstract final class AppGradients {
       AppColors.primaryDeep,
     ],
     stops: [0.0, 0.55, 1.0],
+  );
+
+  /// Emerald hero-card sweep (budget card, currency preview).
+  static const LinearGradient hero = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      AppColors.primary,
+      AppColors.primaryMid,
+      AppColors.primaryDeep,
+    ],
+    stops: [0.0, 0.7, 1.0],
   );
 }

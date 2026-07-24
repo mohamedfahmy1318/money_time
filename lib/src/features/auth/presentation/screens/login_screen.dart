@@ -3,7 +3,6 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/auth_di.dart';
 import 'package:mony_time/src/features/auth/presentation/cubits/auth_cubit.dart';
-import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
 import 'package:mony_time/src/features/auth/presentation/sections/login_form_section.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_footer_link.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_header.dart';
@@ -56,8 +55,8 @@ class _LoginBodyState extends State<_LoginBody> {
       case AuthStatus.failure:
         showToast(context, message: state.errorMessage ?? '', status: 'error');
       case AuthStatus.authenticated:
-        context.read<SessionCubit>().setUser(state.user!);
-        context.go(AppRoutes.home);
+        // Session is committed at the end of the welcome funnel, not here.
+        context.go(AppRoutes.connectShortcuts, extra: state.user);
       default:
         break;
     }

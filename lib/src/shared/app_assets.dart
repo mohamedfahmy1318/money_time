@@ -19,4 +19,8 @@ class AppAssets {
   static const String onboardingTrack = '$_imagesPath/onboarding_track.svg';
   static const String onboardingBudget = '$_imagesPath/onboarding_budget.svg';
   static const String onboardingGoals = '$_imagesPath/onboarding_goals.svg';
+
+  // Welcome (post-auth) illustrations
+  static const String welcomeShortcuts = '$_imagesPath/welcome_shortcuts.svg';
+  static const String welcomeSuccess = '$_imagesPath/welcome_success.svg';
 }

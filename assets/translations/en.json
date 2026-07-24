@@ -79,9 +79,32 @@
     "agree_terms": "I agree to the Terms & Privacy",
     "must_agree_terms": "Please accept the Terms & Privacy"
   },
+  "welcome": {
+    "shortcuts_title": "Log money on autopilot",
+    "shortcuts_subtitle": "Connect Money Time to Apple Shortcuts — your Apple Pay taps & bank alerts turn into entries automatically, on-device.",
+    "connect_shortcuts": "Connect with Shortcuts",
+    "skip_for_now": "Skip for now",
+    "all_set_title": "You're all set, {name}!",
+    "all_set_title_generic": "You're all set!",
+    "all_set_subtitle": "Your money, organised and on autopilot. Let's take a look at your dashboard.",
+    "enter_money_time": "Enter Money Time"
+  },
   "home": {
-    "home_title": "Home",
-    "welcome_home": "Welcome Home!",
-    "home_subtitle": "You have successfully completed the onboarding process."
+    "greeting": "Good morning 👋",
+    "there": "there",
+    "budget_month": "Budget · {month}",
+    "income": "Income",
+    "spent": "Spent",
+    "categories": "Categories",
+    "manage": "Manage",
+    "add": "Add",
+    "recent": "Recent",
+    "see_all": "See all",
+    "nav_home": "Home",
+    "nav_budget": "Budget",
+    "nav_reports": "Reports",
+    "nav_profile": "Profile",
+    "coming_soon": "Coming soon",
+    "add_coming_soon": "Add transaction — coming soon"
   }
 }

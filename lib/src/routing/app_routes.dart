@@ -14,4 +14,6 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  static const String connectShortcuts = '/connect-shortcuts';
+  static const String allSet = '/all-set';
 }

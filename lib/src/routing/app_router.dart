@@ -6,12 +6,15 @@ import 'package:mony_time/src/features/auth/presentation/screens/login_screen.da
 import 'package:mony_time/src/features/auth/presentation/screens/signup_screen.dart';
 import 'package:mony_time/src/features/auth/presentation/screens/forgot_password_screen.dart';
 
-import 'package:mony_time/src/features/home/presentation/screens/home_page.dart';
+import 'package:mony_time/src/features/home/presentation/screens/main_screen.dart';
 import 'package:mony_time/src/features/onboarding/presentation/screens/onboarding_page.dart';
 import 'package:mony_time/src/features/splash/presentation/screens/splash_screen.dart';
 import 'package:mony_time/src/features/setup/presentation/screens/language_screen.dart';
 import 'package:mony_time/src/features/setup/presentation/screens/currency_screen.dart';
 import 'package:mony_time/src/features/setup/presentation/screens/enable_features_screen.dart';
+import 'package:mony_time/src/features/welcome/presentation/screens/connect_shortcuts_screen.dart';
+import 'package:mony_time/src/features/welcome/presentation/screens/all_set_screen.dart';
+import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
 
 final GoRouter appRouter = GoRouter(
@@ -59,9 +62,20 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
+      path: AppRoutes.connectShortcuts,
+      name: 'connectShortcuts',
+      builder: (context, state) =>
+          ConnectShortcutsScreen(user: state.extra as AppUser?),
+    ),
+    GoRoute(
+      path: AppRoutes.allSet,
+      name: 'allSet',
+      builder: (context, state) => AllSetScreen(user: state.extra as AppUser?),
+    ),
+    GoRoute(
       path: AppRoutes.home,
       name: 'home',
-      builder: (context, state) => const HomePage(),
+      builder: (context, state) => const MainScreen(),
     ),
   ],
 );

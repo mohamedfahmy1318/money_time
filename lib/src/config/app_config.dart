@@ -6,6 +6,11 @@ class AppConfig {
   AppConfig._();
   static late final Dio dio;
 
+  /// UI-phase switch: no backend exists yet, so data sources return stub
+  /// responses instead of hitting the network. Flip to `false` (or delete the
+  /// mock branches) once the real API is wired.
+  static const bool useMockData = true;
+
   static String get baseUrl => _getBaseUrl();
 
   static Future<void> init() async {

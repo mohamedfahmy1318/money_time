@@ -79,9 +79,32 @@
     "agree_terms": "أوافق على الشروط والخصوصية",
     "must_agree_terms": "يرجى الموافقة على الشروط والخصوصية"
   },
+  "welcome": {
+    "shortcuts_title": "سجّل أموالك تلقائيًا",
+    "shortcuts_subtitle": "اربط Money Time باختصارات Apple — تتحوّل مدفوعات Apple Pay وتنبيهات البنك إلى قيود تلقائيًا على جهازك.",
+    "connect_shortcuts": "الربط بالاختصارات",
+    "skip_for_now": "تخطّي الآن",
+    "all_set_title": "كل شيء جاهز يا {name}!",
+    "all_set_title_generic": "كل شيء جاهز!",
+    "all_set_subtitle": "أموالك منظّمة وتعمل تلقائيًا. لنلقِ نظرة على لوحتك.",
+    "enter_money_time": "ادخل Money Time"
+  },
   "home": {
-    "home_title": "Home",
-    "welcome_home": "Welcome Home!",
-    "home_subtitle": "You have successfully completed the onboarding process."
+    "greeting": "صباح الخير 👋",
+    "there": "صديقي",
+    "budget_month": "الميزانية · {month}",
+    "income": "الدخل",
+    "spent": "المصروف",
+    "categories": "الفئات",
+    "manage": "إدارة",
+    "add": "إضافة",
+    "recent": "الأخيرة",
+    "see_all": "عرض الكل",
+    "nav_home": "الرئيسية",
+    "nav_budget": "الميزانية",
+    "nav_reports": "التقارير",
+    "nav_profile": "الملف",
+    "coming_soon": "قريبًا",
+    "add_coming_soon": "إضافة معاملة — قريبًا"
   }
 }
