@@ -25,7 +25,10 @@ class HomeTab extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(20.w, 2.h, 20.w, 100.h),
               child: Column(
                 children: [
-                  const BudgetCard(budget: HomeSampleData.budget),
+                  GestureDetector(
+                    onTap: () => context.push(AppRoutes.totalStats),
+                    child: const BudgetCard(budget: HomeSampleData.budget),
+                  ),
                   SizedBox(height: 24.h),
                   const CategoriesSection(
                     categories: HomeSampleData.categories,

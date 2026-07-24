@@ -23,5 +23,8 @@ export '../features/home/presentation/screens/main_screen.dart';
 export '../features/transactions/presentation/screens/add_transaction_screen.dart';
 export '../features/categories/presentation/screens/add_category_screen.dart';
 export '../features/categories/presentation/screens/category_picker_screen.dart';
+export '../features/reports/presentation/screens/reports_tab.dart';
+export '../features/reports/presentation/screens/total_stats_screen.dart';
+export '../features/profile/presentation/screens/profile_tab.dart';
 export '../features/onboarding/presentation/screens/onboarding_page.dart';
 export '../features/splash/presentation/screens/splash_screen.dart';

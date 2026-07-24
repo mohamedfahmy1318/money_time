@@ -130,5 +130,30 @@
     "save": "حفظ الفئة",
     "add": "إضافة",
     "saved": "تم حفظ الفئة"
+  },
+  "reports": {
+    "title": "التقارير",
+    "stats": "الإحصائيات",
+    "budget": "الميزانية",
+    "note": "ملاحظات",
+    "income": "الدخل",
+    "expense": "المصروف",
+    "weekly": "أسبوعي",
+    "monthly": "شهري",
+    "annually": "سنوي",
+    "total_stats": "إجمالي الإحصائيات",
+    "net_worth_trend": "اتجاه صافي الثروة"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "premium": "عضو مميز",
+    "personal_info": "المعلومات الشخصية",
+    "settings": "الإعدادات",
+    "security": "الأمان",
+    "backup": "النسخ الاحتياطي والاستعادة",
+    "shortcut_link": "ربط الاختصار",
+    "connected": "متصل",
+    "coming_soon": "قريبًا",
+    "guest": "ضيف"
   }
 }

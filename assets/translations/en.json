@@ -130,5 +130,30 @@
     "save": "Save Category",
     "add": "Add",
     "saved": "Category saved"
+  },
+  "reports": {
+    "title": "Reports",
+    "stats": "Stats",
+    "budget": "Budget",
+    "note": "Note",
+    "income": "Income",
+    "expense": "Expense",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "annually": "Annually",
+    "total_stats": "Total Stats",
+    "net_worth_trend": "Net worth trend"
+  },
+  "profile": {
+    "title": "Profile",
+    "premium": "Premium Member",
+    "personal_info": "Personal Information",
+    "settings": "Settings",
+    "security": "Security",
+    "backup": "Backup & Restore",
+    "shortcut_link": "Shortcut Link",
+    "connected": "Connected",
+    "coming_soon": "Coming soon",
+    "guest": "Guest"
   }
 }

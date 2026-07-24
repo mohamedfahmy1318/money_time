@@ -17,6 +17,7 @@ import 'package:mony_time/src/features/welcome/presentation/screens/all_set_scre
 import 'package:mony_time/src/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/add_category_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/category_picker_screen.dart';
+import 'package:mony_time/src/features/reports/presentation/screens/total_stats_screen.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
 
@@ -95,6 +96,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.addCategory,
       name: 'addCategory',
       builder: (context, state) => const AddCategoryScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.totalStats,
+      name: 'totalStats',
+      builder: (context, state) => const TotalStatsScreen(),
     ),
   ],
 );

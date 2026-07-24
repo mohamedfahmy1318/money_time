@@ -19,4 +19,5 @@ abstract final class AppRoutes {
   static const String addTransaction = '/add-transaction';
   static const String categoryPicker = '/category-picker';
   static const String addCategory = '/add-category';
+  static const String totalStats = '/total-stats';
 }

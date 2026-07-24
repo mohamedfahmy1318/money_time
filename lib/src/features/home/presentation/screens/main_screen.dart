@@ -20,8 +20,8 @@ class _MainScreenState extends State<MainScreen> {
   static final _tabs = <Widget>[
     const HomeTab(),
     const _PlaceholderTab(titleKey: 'home.nav_budget'),
-    const _PlaceholderTab(titleKey: 'home.nav_reports'),
-    const _PlaceholderTab(titleKey: 'home.nav_profile'),
+    const ReportsTab(),
+    const ProfileTab(),
   ];
 
   List<BottomNavItem> _items() => [
