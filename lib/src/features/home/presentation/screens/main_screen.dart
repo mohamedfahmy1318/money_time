@@ -47,11 +47,7 @@ class _MainScreenState extends State<MainScreen> {
               items: _items(),
               currentIndex: _index,
               onTap: (i) => setState(() => _index = i),
-              onAdd: () => showToast(
-                context,
-                message: 'home.add_coming_soon'.tr(),
-                status: 'info',
-              ),
+              onAdd: () => context.push(AppRoutes.addTransaction),
             ),
           ),
         ],

@@ -106,5 +106,19 @@
     "nav_profile": "Profile",
     "coming_soon": "Coming soon",
     "add_coming_soon": "Add transaction — coming soon"
+  },
+  "transactions": {
+    "title": "Add Transaction",
+    "income": "Income",
+    "expense": "Expense",
+    "date": "Date",
+    "amount": "Amount",
+    "category": "Category",
+    "note": "Note",
+    "add_note": "Add a note",
+    "note_hint": "Weekly grocery shopping at the mall",
+    "save_note": "Save Note",
+    "saved": "Transaction saved",
+    "coming_soon": "Coming soon"
   }
 }

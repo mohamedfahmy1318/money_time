@@ -16,4 +16,5 @@ abstract final class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String connectShortcuts = '/connect-shortcuts';
   static const String allSet = '/all-set';
+  static const String addTransaction = '/add-transaction';
 }

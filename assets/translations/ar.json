@@ -106,5 +106,19 @@
     "nav_profile": "الملف",
     "coming_soon": "قريبًا",
     "add_coming_soon": "إضافة معاملة — قريبًا"
+  },
+  "transactions": {
+    "title": "إضافة معاملة",
+    "income": "دخل",
+    "expense": "مصروف",
+    "date": "التاريخ",
+    "amount": "المبلغ",
+    "category": "الفئة",
+    "note": "ملاحظة",
+    "add_note": "أضف ملاحظة",
+    "note_hint": "تسوق البقالة الأسبوعي في المول",
+    "save_note": "حفظ الملاحظة",
+    "saved": "تم حفظ المعاملة",
+    "coming_soon": "قريبًا"
   }
 }

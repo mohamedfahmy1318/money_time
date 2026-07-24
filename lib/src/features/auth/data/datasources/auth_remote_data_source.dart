@@ -64,13 +64,7 @@ class AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser() async {
     // No persisted session in mock mode → always start unauthenticated so the
     // onboarding flow runs on every launch.
-    if (AppConfig.useMockData) {
-      return const UserModel(
-        id: 'mock-user',
-        email: 'ahmed@money.com',
-        name: 'Ahmed Mohamed',
-      ); // TEMP: land on dashboard for verification; revert to `return null;`
-    }
+    if (AppConfig.useMockData) return null;
     final response = await _dio.get<Map<String, dynamic>>('/auth/me');
     final data = response.data;
     if (data == null) return null;

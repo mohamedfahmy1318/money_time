@@ -14,6 +14,7 @@ import 'package:mony_time/src/features/setup/presentation/screens/currency_scree
 import 'package:mony_time/src/features/setup/presentation/screens/enable_features_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/connect_shortcuts_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/all_set_screen.dart';
+import 'package:mony_time/src/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
 
@@ -76,6 +77,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.home,
       name: 'home',
       builder: (context, state) => const MainScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.addTransaction,
+      name: 'addTransaction',
+      builder: (context, state) => const AddTransactionScreen(),
     ),
   ],
 );
