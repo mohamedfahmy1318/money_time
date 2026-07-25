@@ -10,10 +10,10 @@ import 'package:mony_time/src/features/transactions/presentation/sections/monthl
 import 'package:mony_time/src/features/transactions/presentation/sections/summary_view.dart';
 import 'package:mony_time/src/features/transactions/presentation/widgets/month_stepper.dart';
 
-/// The ledger hub tab: Daily / Calendar / Monthly / Summary views of the
-/// shared transaction list, with a month (or year) stepper, search and
-/// filtering. Data comes from the app-wide [TransactionsCubit]; this screen
-/// only owns view-local UI state.
+/// The ledger hub (pushed from Home "See all"): Daily / Calendar / Monthly /
+/// Summary views of the shared transaction list, with a month (or year)
+/// stepper, search and filtering. Data comes from the app-wide
+/// [TransactionsCubit]; this screen only owns view-local UI state.
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
 
@@ -62,17 +62,17 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final monthTransactions = _filter.apply(state.monthOf(_month));
     final locale = context.locale.toString();
 
-    return SafeArea(
-      bottom: false,
-      child: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(22.w, 8.h, 22.w, 0),
             child: Row(
               children: [
                 _HeaderIcon(
-                  icon: Icons.search_rounded,
-                  onTap: () => context.push(AppRoutes.transactionsSearch),
+                  icon: Icons.arrow_back,
+                  onTap: () => context.popOrGo(AppRoutes.home),
                 ),
                 Expanded(
                   child: Text(
@@ -85,6 +85,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                   ),
                 ),
+                _HeaderIcon(
+                  icon: Icons.search_rounded,
+                  onTap: () => context.push(AppRoutes.transactionsSearch),
+                ),
+                SizedBox(width: 10.w),
                 _HeaderIcon(
                   icon: Icons.tune_rounded,
                   // Tinted while a filter is active so it's discoverable.
@@ -116,6 +121,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           SizedBox(height: 14.h),
           Expanded(child: _body(state, monthTransactions)),
         ],
+        ),
       ),
     );
   }

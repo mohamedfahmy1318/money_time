@@ -193,5 +193,21 @@
     "connected": "متصل",
     "coming_soon": "قريبًا",
     "guest": "ضيف"
+  },
+  "budgets": {
+    "title": "الميزانية",
+    "monthly_budget": "الميزانية الشهرية",
+    "spent": "المصروف",
+    "spent_amount": "المصروف {amount}",
+    "setting": "إعداد الميزانية",
+    "add_budget": "إضافة ميزانية",
+    "on_track": "على المسار",
+    "over": "تجاوزت!",
+    "left": "متبقي {amount}",
+    "remaining_monthly": "المتبقي (شهريًا)",
+    "edit_title": "ميزانية {category}",
+    "monthly_limit": "الحد الشهري لـ {category}",
+    "save": "حفظ",
+    "saved": "تم حفظ الميزانية"
   }
 }

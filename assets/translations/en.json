@@ -193,5 +193,21 @@
     "connected": "Connected",
     "coming_soon": "Coming soon",
     "guest": "Guest"
+  },
+  "budgets": {
+    "title": "Budget",
+    "monthly_budget": "Monthly Budget",
+    "spent": "Spent",
+    "spent_amount": "Spent {amount}",
+    "setting": "Budget Setting",
+    "add_budget": "Add Budget",
+    "on_track": "on track",
+    "over": "over!",
+    "left": "{amount} left",
+    "remaining_monthly": "Remaining (Monthly)",
+    "edit_title": "{category} Budget",
+    "monthly_limit": "Monthly limit for {category}",
+    "save": "Save",
+    "saved": "Budget saved"
   }
 }

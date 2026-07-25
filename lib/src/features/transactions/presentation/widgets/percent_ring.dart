@@ -10,35 +10,47 @@ class PercentRing extends StatelessWidget {
     super.key,
     required this.fraction,
     required this.color,
-    required this.caption,
+    this.caption,
+    this.size,
+    this.trackColor,
+    this.labelColor,
   });
 
   /// 0..1 share drawn as the coloured arc.
   final double fraction;
   final Color color;
 
-  /// Muted label under the ring (`Income` / `Expense`).
-  final String caption;
+  /// Optional muted label under the ring (`Income` / `Expense`).
+  final String? caption;
+
+  /// Ring diameter; defaults to the Figma 74.
+  final double? size;
+
+  /// Track / label overrides (the budget hero draws white-on-emerald).
+  final Color? trackColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
+    final side = size ?? 74.r;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 74.r,
-          height: 74.r,
+          width: side,
+          height: side,
           child: CustomPaint(
             painter: _RingPainter(
               fraction: fraction.clamp(0.0, 1.0),
               color: color,
-              track: context.colors.outlineVariant,
+              track: trackColor ?? context.colors.outlineVariant,
             ),
             child: Center(
               child: Text(
                 '${(fraction.clamp(0.0, 1.0) * 100).round()}%',
                 style: context.textTheme.labelMedium?.copyWith(
-                  color: context.colors.onSurface,
+                  color: labelColor ?? context.colors.onSurface,
                   fontWeight: FontWeight.bold,
                   fontSize: 13.sp,
                 ),
@@ -46,15 +58,17 @@ class PercentRing extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(
-          caption,
-          style: context.textTheme.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
-            fontWeight: FontWeight.w400,
-            fontSize: 11.sp,
+        if (caption != null) ...[
+          SizedBox(height: 8.h),
+          Text(
+            caption!,
+            style: context.textTheme.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+              fontWeight: FontWeight.w400,
+              fontSize: 11.sp,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

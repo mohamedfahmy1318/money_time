@@ -20,6 +20,10 @@ import 'package:mony_time/src/features/transactions/presentation/screens/add_tra
 import 'package:mony_time/src/features/transactions/presentation/screens/transaction_detail_screen.dart';
 import 'package:mony_time/src/features/transactions/presentation/screens/transaction_filter_screen.dart';
 import 'package:mony_time/src/features/transactions/presentation/screens/transaction_search_screen.dart';
+import 'package:mony_time/src/features/transactions/presentation/screens/transactions_screen.dart';
+import 'package:mony_time/src/features/budgets/domain/entities/budget.dart';
+import 'package:mony_time/src/features/budgets/presentation/screens/budget_settings_screen.dart';
+import 'package:mony_time/src/features/budgets/presentation/screens/budget_edit_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/add_category_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/category_picker_screen.dart';
 import 'package:mony_time/src/features/reports/presentation/screens/total_stats_screen.dart';
@@ -91,6 +95,22 @@ final GoRouter appRouter = GoRouter(
       name: 'addTransaction',
       builder: (context, state) =>
           AddTransactionScreen(initial: state.extra as Transaction?),
+    ),
+    GoRoute(
+      path: AppRoutes.transactions,
+      name: 'transactions',
+      builder: (context, state) => const TransactionsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.budgetSettings,
+      name: 'budgetSettings',
+      builder: (context, state) => const BudgetSettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.budgetEdit,
+      name: 'budgetEdit',
+      builder: (context, state) =>
+          BudgetEditScreen(budget: state.extra as Budget),
     ),
     GoRoute(
       path: AppRoutes.transactionDetail,

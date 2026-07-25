@@ -6,6 +6,10 @@ import '../../imports/imports.dart';
 /// is persisted this becomes a lookup instead of a constant.
 const String kCurrencySymbol = 'E£';
 
+/// Overall monthly budget ceiling (home hero, budget tab, summary, reports).
+/// Placeholder until budgets become real backend data.
+const double kMonthlyBudget = 5000;
+
 /// `3,200` · `120.50` — thousands separators, decimals only when present.
 String formatMoney(num value) {
   final abs = value.abs();

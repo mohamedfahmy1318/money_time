@@ -10,36 +10,36 @@ abstract final class AppColors {
 
   // ── Brand — emerald ────────────────────────────────────────────────────────
   /// Primary brand colour. Active indicator, icon accents, button base.
-  static const Color primary = Color(0xFF10B981);
+  static const Color primary = Color(0xFF94A3B8);
 
   /// Gradient start on the primary CTA.
-  static const Color primaryLight = Color(0xFF34D399);
+  static const Color primaryLight = Color(0xFF94A3B8);
 
   /// Gradient end on the primary CTA.
-  static const Color primaryDark = Color(0xFF059669);
+  static const Color primaryDark = Color(0xFF94A3B8);
 
   /// Splash gradient midpoint.
-  static const Color primaryMid = Color(0xFF0B8C63);
+  static const Color primaryMid = Color(0xFF94A3B8);
 
   /// Splash gradient end — deepest brand shade.
-  static const Color primaryDeep = Color(0xFF065F46);
+  static const Color primaryDeep = Color(0xFF94A3B8);
 
   /// Soft mint halo behind onboarding illustrations; also the tonal fill of a
   /// selected list row.
   static const Color primarySoft = Color(0xFFE9FBF3);
 
   /// Text/icon colour on top of [primarySoft].
-  static const Color primaryOnSoft = Color(0xFF0E7A54);
+  static const Color primaryOnSoft = Color(0xFF94A3B8);
 
   /// Muted mint used for text on the brand gradient (splash tagline).
   static const Color onPrimaryMuted = Color(0xFFD6F5E8);
 
   // ── Neutrals ───────────────────────────────────────────────────────────────
   /// Page background.
-  static const Color background = Color(0xFFF4F7F9);
+  static const Color background = Color(0xFFF8FAFC);
 
   /// Primary text / near-black ink.
-  static const Color ink = Color(0xFF0B1220);
+  static const Color ink = Color(0xFF1F2937);
 
   /// Secondary text, captions, inactive labels.
   static const Color textMuted = Color(0xFF7A8AA0);
@@ -66,6 +66,12 @@ abstract final class AppColors {
 
   /// Amber highlight used inside illustrations (star, add button).
   static const Color amber = Color(0xFFFBBF24);
+
+  /// Deep amber — end stop of the budget "warning" progress sweep.
+  static const Color amberDeep = Color(0xFFF59E0B);
+
+  /// Light red — start stop of the budget "over" progress sweep.
+  static const Color errorLight = Color(0xFFF87171);
 
   /// Softened red used for weekend (Saturday) dates on the calendar grid.
   static const Color softRed = Color(0xFFEF6A5E);

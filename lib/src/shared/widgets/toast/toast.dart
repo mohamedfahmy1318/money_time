@@ -78,7 +78,11 @@ class ToastBar {
       createdAt: DateTime.now(),
     );
     info.entry = OverlayEntry(
-      builder: (_) => RawToast(
+      // Use the overlay entry's own live context — not the captured `context`
+      // from show(). This builder re-runs on every overlay rebuild, and the
+      // original context may be deactivated by then, which makes Theme.of()
+      // (and other ancestor lookups) inside `builder` throw.
+      builder: (overlayContext) => RawToast(
         key: info.key,
         animationDuration: animationDuration,
         toastPosition: position,
@@ -88,7 +92,7 @@ class ToastBar {
         getscaleFactor: () => calculateScaleFactor(_toastBars, this),
         snackbarDuration: toastDuration,
         onRemove: remove,
-        child: builder.call(context),
+        child: builder.call(overlayContext),
       ),
     );
 

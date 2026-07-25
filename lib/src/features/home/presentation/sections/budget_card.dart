@@ -54,16 +54,25 @@ class BudgetCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                Text(
-                  budget.total,
-                  style: context.textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 31.sp,
-                    letterSpacing: -0.62,
+                // Expanded + scaleDown fills the space between the label and
+                // the pills (replacing a Spacer) while yielding sub-pixel slack
+                // instead of overflowing when font metrics push the line taller.
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.topStart,
+                    child: Text(
+                      budget.total,
+                      maxLines: 1,
+                      style: context.textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 31.sp,
+                        letterSpacing: -0.62,
+                      ),
+                    ),
                   ),
                 ),
-                const Spacer(),
                 Row(
                   children: [
                     Expanded(

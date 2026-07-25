@@ -1,13 +1,14 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/budgets/presentation/sections/budget_report_view.dart';
 import 'package:mony_time/src/features/reports/presentation/sections/reports_note_view.dart';
 import 'package:mony_time/src/features/reports/presentation/sections/reports_stats_view.dart';
-import 'package:mony_time/src/features/reports/presentation/sections/total_stats_view.dart';
 import 'package:mony_time/src/features/reports/presentation/widgets/monthly_dropdown.dart';
 
 /// Reports bottom-nav tab: a "Reports" header with the period picker over a
-/// Stats / Budget / Note switcher. Budget reuses the net-worth [TotalStatsView].
+/// Stats / Budget / Note switcher. Budget shows the live budget consumption
+/// report.
 class ReportsTab extends StatefulWidget {
   const ReportsTab({super.key});
 
@@ -58,10 +59,10 @@ class _ReportsTabState extends State<ReportsTab> {
           Expanded(
             child: IndexedStack(
               index: _tab,
-              children: [
-                const ReportsStatsView(),
-                TotalStatsView(padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 100.h)),
-                const ReportsNoteView(),
+              children: const [
+                ReportsStatsView(),
+                BudgetReportView(),
+                ReportsNoteView(),
               ],
             ),
           ),

@@ -5,8 +5,8 @@ import 'package:mony_time/src/features/home/presentation/screens/home_tab.dart';
 import 'package:mony_time/src/features/home/presentation/widgets/app_bottom_nav.dart';
 
 /// Authenticated shell hosting the four bottom-nav tabs and the central add
-/// action: Home · Transactions ledger · Reports · Profile. Tabs are kept
-/// alive via an [IndexedStack].
+/// action: Home · Budget · Reports · Profile. The transactions ledger is a
+/// pushed route (Home → "See all"). Tabs are kept alive via an [IndexedStack].
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -15,15 +15,20 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  static const _transactionsTab = 1;
-
   int _index = 0;
+
+  static const _tabs = <Widget>[
+    HomeTab(),
+    BudgetTab(),
+    ReportsTab(),
+    ProfileTab(),
+  ];
 
   List<BottomNavItem> _items() => [
         BottomNavItem(icon: Icons.home_outlined, label: 'home.nav_home'.tr()),
         BottomNavItem(
-          icon: Icons.receipt_long_outlined,
-          label: 'home.nav_transactions'.tr(),
+          icon: Icons.pie_chart_outline_rounded,
+          label: 'home.nav_budget'.tr(),
         ),
         BottomNavItem(icon: Icons.bar_chart_rounded, label: 'home.nav_reports'.tr()),
         BottomNavItem(icon: Icons.person_outline_rounded, label: 'home.nav_profile'.tr()),
@@ -31,21 +36,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = <Widget>[
-      HomeTab(
-        onOpenTransactions: () =>
-            setState(() => _index = _transactionsTab),
-      ),
-      const TransactionsScreen(),
-      const ReportsTab(),
-      const ProfileTab(),
-    ];
-
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
-            child: IndexedStack(index: _index, children: tabs),
+            child: IndexedStack(index: _index, children: _tabs),
           ),
           Positioned(
             left: 0,

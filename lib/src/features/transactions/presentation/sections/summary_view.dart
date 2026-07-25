@@ -5,9 +5,6 @@ import 'package:mony_time/src/features/transactions/domain/entities/transaction.
 import 'package:mony_time/src/features/transactions/presentation/cubits/transactions_cubit.dart';
 import 'package:mony_time/src/features/transactions/presentation/sections/month_summary_strip.dart';
 
-/// Placeholder monthly budget until budgets become real data.
-const double _kMonthlyBudget = 5000;
-
 /// Summary ledger view: month totals, the accounts aggregate, budget
 /// consumption and the export action.
 class SummaryView extends StatelessWidget {
@@ -19,7 +16,7 @@ class SummaryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final expense = TransactionsState.sumExpense(transactions);
-    final budgetFraction = expense / _kMonthlyBudget;
+    final budgetFraction = expense / kMonthlyBudget;
     final budgetPercent = (budgetFraction * 100).round();
 
     return ListView(

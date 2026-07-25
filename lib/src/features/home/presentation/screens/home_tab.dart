@@ -11,10 +11,7 @@ import 'package:mony_time/src/features/transactions/presentation/cubits/transact
 /// The Home dashboard tab: greeting header over the live budget summary,
 /// categories and the latest ledger activity.
 class HomeTab extends StatelessWidget {
-  const HomeTab({super.key, required this.onOpenTransactions});
-
-  /// Jumps to the transactions ledger tab ("See all").
-  final VoidCallback onOpenTransactions;
+  const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +48,7 @@ class HomeTab extends StatelessWidget {
                   SizedBox(height: 24.h),
                   RecentSection(
                     transactions: state.latest(3),
-                    onSeeAll: onOpenTransactions,
+                    onSeeAll: () => context.push(AppRoutes.transactions),
                     onTapTransaction: (t) => context.push(
                       AppRoutes.transactionDetail,
                       extra: t,

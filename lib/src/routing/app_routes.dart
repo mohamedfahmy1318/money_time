@@ -17,9 +17,12 @@ abstract final class AppRoutes {
   static const String connectShortcuts = '/connect-shortcuts';
   static const String allSet = '/all-set';
   static const String addTransaction = '/add-transaction';
+  static const String transactions = '/transactions';
   static const String transactionDetail = '/transaction-detail';
   static const String transactionsSearch = '/transactions-search';
   static const String transactionsFilter = '/transactions-filter';
+  static const String budgetSettings = '/budget-settings';
+  static const String budgetEdit = '/budget-edit';
   static const String categoryPicker = '/category-picker';
   static const String addCategory = '/add-category';
   static const String totalStats = '/total-stats';
