@@ -1,54 +1,58 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
-import 'package:mony_time/src/features/home/presentation/models/home_data.dart';
 import 'package:mony_time/src/features/home/presentation/widgets/section_header.dart';
-import 'package:mony_time/src/features/home/presentation/widgets/transaction_tile.dart';
+import 'package:mony_time/src/features/transactions/domain/entities/transaction.dart';
+import 'package:mony_time/src/features/transactions/presentation/widgets/transaction_card.dart';
+import 'package:mony_time/src/features/transactions/presentation/widgets/transaction_row.dart';
 
-/// "Recent" header plus a card listing the latest transactions.
+/// "Recent" header plus a card listing the latest transactions from the
+/// app-wide ledger.
 class RecentSection extends StatelessWidget {
-  const RecentSection({super.key, required this.transactions});
+  const RecentSection({
+    super.key,
+    required this.transactions,
+    required this.onSeeAll,
+    required this.onTapTransaction,
+  });
 
-  final List<HomeTransaction> transactions;
+  final List<Transaction> transactions;
+  final VoidCallback onSeeAll;
+  final ValueChanged<Transaction> onTapTransaction;
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.locale.toString();
+
     return Column(
       children: [
         SectionHeader(
           title: 'home.recent'.tr(),
           action: 'home.see_all'.tr(),
-          onAction: () {},
+          onAction: onSeeAll,
         ),
         SizedBox(height: 12.h),
-        Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: context.colors.surfaceContainerLowest,
-            borderRadius: AppBorders.xl,
-            border: Border.all(color: context.colors.outlineVariant),
-            boxShadow: [
-              BoxShadow(
-                color: context.colors.onSurface.withValues(alpha: 0.05),
-                offset: Offset(0, 4.h),
-                blurRadius: 7.r,
+        if (transactions.isEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            child: Text(
+              'transactions.empty_title'.tr(),
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
               ),
+            ),
+          )
+        else
+          TransactionCard(
+            rows: [
+              for (final t in transactions)
+                TransactionRow(
+                  transaction: t,
+                  subtitle: AppDate.shortDate(t.date, locale),
+                  onTap: () => onTapTransaction(t),
+                ),
             ],
           ),
-          child: Column(
-            children: [
-              for (var i = 0; i < transactions.length; i++) ...[
-                if (i > 0)
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: context.colors.outlineVariant,
-                  ),
-                TransactionTile(transaction: transactions[i]),
-              ],
-            ],
-          ),
-        ),
       ],
     );
   }

@@ -2,7 +2,9 @@
   "app_name": "Money Time",
   "shared": {
     "get_started": "Get Started",
-    "continue_action": "Continue"
+    "continue_action": "Continue",
+    "cancel": "Cancel",
+    "something_wrong": "Something went wrong"
   },
   "splash": {
     "tagline": "TIME YOUR MONEY"
@@ -105,7 +107,8 @@
     "nav_reports": "Reports",
     "nav_profile": "Profile",
     "coming_soon": "Coming soon",
-    "add_coming_soon": "Add transaction — coming soon"
+    "add_coming_soon": "Add transaction — coming soon",
+    "nav_transactions": "Trans"
   },
   "transactions": {
     "title": "Add Transaction",
@@ -119,7 +122,42 @@
     "note_hint": "Weekly grocery shopping at the mall",
     "save_note": "Save Note",
     "saved": "Transaction saved",
-    "coming_soon": "Coming soon"
+    "coming_soon": "Coming soon",
+    "ledger_title": "Transactions",
+    "tab_daily": "Daily",
+    "tab_calendar": "Calendar",
+    "tab_monthly": "Monthly",
+    "tab_summary": "Summary",
+    "exp_short": "Exp.",
+    "total": "Total",
+    "empty_title": "No transactions",
+    "empty_subtitle": "Add one with the + button",
+    "empty_day": "No transactions on this day",
+    "empty_year": "Nothing recorded this year",
+    "accounts": "Accounts",
+    "accounts_expense": "Exp. (Cash, Bank, Card)",
+    "budget": "Budget",
+    "total_budget": "Total Budget",
+    "export_excel": "Export data to Excel",
+    "export_soon": "Export — coming soon",
+    "detail_title": "Transaction",
+    "auto_source": "Auto (Shortcut)",
+    "edit": "Edit",
+    "edit_title": "Edit Transaction",
+    "delete": "Delete",
+    "delete_title": "Delete transaction?",
+    "delete_message": "This transaction will be permanently removed.",
+    "deleted": "Transaction deleted",
+    "updated": "Transaction updated",
+    "search_title": "Search",
+    "search_hint": "Search transactions…",
+    "all": "All",
+    "search_results": "{count} results · {total}",
+    "search_empty": "No results",
+    "filter_title": "Filter",
+    "apply_filter": "Apply Filter",
+    "invalid_amount": "Enter a valid amount",
+    "source": "Source"
   },
   "categories": {
     "add_title": "Add Category",

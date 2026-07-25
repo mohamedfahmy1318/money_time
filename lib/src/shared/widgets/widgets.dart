@@ -11,6 +11,8 @@ export 'app_divider.dart';
 export 'app_top_bar.dart';
 export 'segmented_tabs.dart';
 export 'transaction_type_toggle.dart';
+export 'underline_tabs.dart';
+export 'gradient_progress_bar.dart';
 export 'common_image.dart';
 export 'toast/imports.dart';
 export 'app_cached_image.dart';

@@ -371,6 +371,11 @@ ThemeData buildLightTheme({required String primaryColorHex}) {
     onSurface: AppColors.ink,
     onSurfaceVariant: AppColors.textMuted,
     outlineVariant: AppColors.divider,
+    // Figma pins the expense/destructive red and its soft container tint
+    // (transaction amounts, the Delete button on transaction detail).
+    error: const Color(0xFFEF4444),
+    errorContainer: const Color(0xFFFDECEC),
+    onErrorContainer: const Color(0xFFEF4444),
   );
   return _buildTheme(colorScheme, AppPalettes.light);
 }

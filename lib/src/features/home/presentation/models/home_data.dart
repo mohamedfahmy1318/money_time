@@ -13,26 +13,6 @@ class HomeCategory {
   final Color tint;
 }
 
-/// A single entry in the "Recent" list.
-class HomeTransaction {
-  const HomeTransaction({
-    required this.emoji,
-    required this.title,
-    required this.date,
-    required this.amount,
-    required this.isIncome,
-  });
-
-  final String emoji;
-  final String title;
-  final String date;
-
-  /// Unsigned, pre-formatted amount (e.g. `3,200`). The sign and colour are
-  /// derived from [isIncome] at render time.
-  final String amount;
-  final bool isIncome;
-}
-
 /// The month's budget summary shown in the gradient hero card.
 class HomeBudget {
   const HomeBudget({
@@ -48,36 +28,17 @@ class HomeBudget {
   final String spent;
 }
 
-/// Placeholder dashboard content for the UI phase. Replace with real data once
-/// the backend and a home cubit exist.
+/// Placeholder dashboard content. The recent list and budget income/spent now
+/// come live from [TransactionsCubit]; what remains here becomes real data
+/// once budgets and category management reach the backend.
 abstract final class HomeSampleData {
-  static const budget = HomeBudget(
-    month: 'July',
-    total: 'E£ 5,000.00',
-    income: 'E£ 5,820',
-    spent: 'E£ 2,450',
-  );
+  /// Monthly budget ceiling shown on the hero card (display form of the
+  /// summary view's 5,000 placeholder).
+  static const budgetTotal = 'E£ 5,000.00';
 
   static const categories = <HomeCategory>[
     HomeCategory(emoji: '🍜', label: 'Food', tint: AppColors.tintMint),
     HomeCategory(emoji: '🚕', label: 'Transport', tint: AppColors.tintBlue),
     HomeCategory(emoji: '🛍️', label: 'Shopping', tint: AppColors.tintOrange),
-  ];
-
-  static const recent = <HomeTransaction>[
-    HomeTransaction(
-      emoji: '💰',
-      title: 'Salary',
-      date: 'May 23',
-      amount: '3,200',
-      isIncome: true,
-    ),
-    HomeTransaction(
-      emoji: '🛒',
-      title: 'Groceries',
-      date: 'May 23',
-      amount: '120.50',
-      isIncome: false,
-    ),
   ];
 }

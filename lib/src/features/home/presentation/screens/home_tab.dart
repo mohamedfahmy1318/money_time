@@ -6,15 +6,30 @@ import 'package:mony_time/src/features/home/presentation/sections/budget_card.da
 import 'package:mony_time/src/features/home/presentation/sections/categories_section.dart';
 import 'package:mony_time/src/features/home/presentation/sections/home_header.dart';
 import 'package:mony_time/src/features/home/presentation/sections/recent_section.dart';
+import 'package:mony_time/src/features/transactions/presentation/cubits/transactions_cubit.dart';
 
-/// The Home dashboard tab: greeting header over a scrolling budget summary,
-/// categories and recent activity. Content is [HomeSampleData] for the UI
-/// phase.
+/// The Home dashboard tab: greeting header over the live budget summary,
+/// categories and the latest ledger activity.
 class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+  const HomeTab({super.key, required this.onOpenTransactions});
+
+  /// Jumps to the transactions ledger tab ("See all").
+  final VoidCallback onOpenTransactions;
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<TransactionsCubit>().state;
+    final now = DateTime.now();
+    final month = state.monthOf(DateTime(now.year, now.month));
+    final locale = context.locale.toString();
+
+    final budget = HomeBudget(
+      month: AppDate.monthName(now, locale),
+      total: HomeSampleData.budgetTotal,
+      income: moneyWithSymbol(TransactionsState.sumIncome(month)),
+      spent: moneyWithSymbol(TransactionsState.sumExpense(month)),
+    );
+
     return SafeArea(
       bottom: false,
       child: Column(
@@ -27,15 +42,20 @@ class HomeTab extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () => context.push(AppRoutes.totalStats),
-                    child: const BudgetCard(budget: HomeSampleData.budget),
+                    child: BudgetCard(budget: budget),
                   ),
                   SizedBox(height: 24.h),
                   const CategoriesSection(
                     categories: HomeSampleData.categories,
                   ),
                   SizedBox(height: 24.h),
-                  const RecentSection(
-                    transactions: HomeSampleData.recent,
+                  RecentSection(
+                    transactions: state.latest(3),
+                    onSeeAll: onOpenTransactions,
+                    onTapTransaction: (t) => context.push(
+                      AppRoutes.transactionDetail,
+                      extra: t,
+                    ),
                   ),
                 ],
               ),

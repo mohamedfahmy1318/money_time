@@ -2,7 +2,9 @@
   "app_name": "Money Time",
   "shared": {
     "get_started": "ابدأ الآن",
-    "continue_action": "متابعة"
+    "continue_action": "متابعة",
+    "cancel": "إلغاء",
+    "something_wrong": "حدث خطأ ما"
   },
   "splash": {
     "tagline": "وقّت أموالك"
@@ -105,7 +107,8 @@
     "nav_reports": "التقارير",
     "nav_profile": "الملف",
     "coming_soon": "قريبًا",
-    "add_coming_soon": "إضافة معاملة — قريبًا"
+    "add_coming_soon": "إضافة معاملة — قريبًا",
+    "nav_transactions": "المعاملات"
   },
   "transactions": {
     "title": "إضافة معاملة",
@@ -119,7 +122,42 @@
     "note_hint": "تسوق البقالة الأسبوعي في المول",
     "save_note": "حفظ الملاحظة",
     "saved": "تم حفظ المعاملة",
-    "coming_soon": "قريبًا"
+    "coming_soon": "قريبًا",
+    "ledger_title": "المعاملات",
+    "tab_daily": "يومي",
+    "tab_calendar": "التقويم",
+    "tab_monthly": "شهري",
+    "tab_summary": "ملخص",
+    "exp_short": "مصروف",
+    "total": "الإجمالي",
+    "empty_title": "لا توجد معاملات",
+    "empty_subtitle": "أضف معاملة بزر +",
+    "empty_day": "لا توجد معاملات في هذا اليوم",
+    "empty_year": "لا توجد معاملات في هذه السنة",
+    "accounts": "الحسابات",
+    "accounts_expense": "المصروف (نقدي، بنك، بطاقة)",
+    "budget": "الميزانية",
+    "total_budget": "إجمالي الميزانية",
+    "export_excel": "تصدير البيانات إلى Excel",
+    "export_soon": "التصدير — قريبًا",
+    "detail_title": "المعاملة",
+    "auto_source": "تلقائي (اختصار)",
+    "edit": "تعديل",
+    "edit_title": "تعديل المعاملة",
+    "delete": "حذف",
+    "delete_title": "حذف المعاملة؟",
+    "delete_message": "سيتم حذف هذه المعاملة نهائيًا.",
+    "deleted": "تم حذف المعاملة",
+    "updated": "تم تحديث المعاملة",
+    "search_title": "بحث",
+    "search_hint": "ابحث في المعاملات…",
+    "all": "الكل",
+    "search_results": "{count} نتيجة · {total}",
+    "search_empty": "لا توجد نتائج",
+    "filter_title": "تصفية",
+    "apply_filter": "تطبيق التصفية",
+    "invalid_amount": "أدخل مبلغًا صحيحًا",
+    "source": "المصدر"
   },
   "categories": {
     "add_title": "إضافة فئة",

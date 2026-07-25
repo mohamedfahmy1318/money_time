@@ -126,15 +126,19 @@ class _StatPill extends StatelessWidget {
             ),
           ),
           SizedBox(height: 2.h),
-          Text(
-            value,
-            maxLines: 1,
-            style: context.textTheme.titleSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
-              height: 1.1,
-              letterSpacing: -0.16,
+          // Scale down rather than wrap when the live amount grows long.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: context.textTheme.titleSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                height: 1.1,
+                letterSpacing: -0.16,
+              ),
             ),
           ),
         ],

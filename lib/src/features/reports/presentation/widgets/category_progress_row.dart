@@ -38,21 +38,7 @@ class CategoryProgressRow extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 7.h),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(4.r),
-                child: Stack(
-                  children: [
-                    Container(height: 6.h, color: context.colors.surface),
-                    FractionallySizedBox(
-                      widthFactor: data.fraction.clamp(0.0, 1.0),
-                      child: Container(
-                        height: 6.h,
-                        decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              GradientProgressBar(fraction: data.fraction),
             ],
           ),
         ),

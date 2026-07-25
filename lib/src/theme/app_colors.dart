@@ -67,6 +67,12 @@ abstract final class AppColors {
   /// Amber highlight used inside illustrations (star, add button).
   static const Color amber = Color(0xFFFBBF24);
 
+  /// Softened red used for weekend (Saturday) dates on the calendar grid.
+  static const Color softRed = Color(0xFFEF6A5E);
+
+  /// Deep slate header bar on the transaction filter screen.
+  static const Color slateDeep = Color(0xFF2E3B57);
+
   // ── Category tile tints ──────────────────────────────────────────────────
   /// Mint tile — reuses [primarySoft].
   static const Color tintMint = primarySoft;

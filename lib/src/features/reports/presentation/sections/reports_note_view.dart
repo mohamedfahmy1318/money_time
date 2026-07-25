@@ -24,10 +24,10 @@ class _ReportsNoteViewState extends State<ReportsNoteView> {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: _UnderlineTabs(
+          child: UnderlineTabs(
             labels: ['reports.income'.tr(), 'reports.expense'.tr()],
             colors: [context.colors.tertiary, context.colors.error],
-            selected: _filter,
+            selectedIndex: _filter,
             onChanged: (i) => setState(() => _filter = i),
           ),
         ),
@@ -56,54 +56,6 @@ class _ReportsNoteViewState extends State<ReportsNoteView> {
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-/// Two text tabs with a coloured underline under the active one.
-class _UnderlineTabs extends StatelessWidget {
-  const _UnderlineTabs({
-    required this.labels,
-    required this.colors,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final List<String> labels;
-  final List<Color> colors;
-  final int selected;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < labels.length; i++)
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(i),
-              behavior: HitTestBehavior.opaque,
-              child: Column(
-                children: [
-                  SizedBox(height: 6.h),
-                  Text(
-                    labels[i],
-                    style: context.textTheme.labelLarge?.copyWith(
-                      color: i == selected ? colors[i] : context.colors.onSurfaceVariant,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.5.sp,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Container(
-                    height: 2.h,
-                    color: i == selected ? colors[i] : Colors.transparent,
-                  ),
-                ],
-              ),
-            ),
-          ),
       ],
     );
   }

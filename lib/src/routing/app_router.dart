@@ -14,7 +14,12 @@ import 'package:mony_time/src/features/setup/presentation/screens/currency_scree
 import 'package:mony_time/src/features/setup/presentation/screens/enable_features_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/connect_shortcuts_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/all_set_screen.dart';
+import 'package:mony_time/src/features/transactions/domain/entities/transaction.dart';
+import 'package:mony_time/src/features/transactions/presentation/models/transaction_filter.dart';
 import 'package:mony_time/src/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:mony_time/src/features/transactions/presentation/screens/transaction_detail_screen.dart';
+import 'package:mony_time/src/features/transactions/presentation/screens/transaction_filter_screen.dart';
+import 'package:mony_time/src/features/transactions/presentation/screens/transaction_search_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/add_category_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/category_picker_screen.dart';
 import 'package:mony_time/src/features/reports/presentation/screens/total_stats_screen.dart';
@@ -84,7 +89,25 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.addTransaction,
       name: 'addTransaction',
-      builder: (context, state) => const AddTransactionScreen(),
+      builder: (context, state) =>
+          AddTransactionScreen(initial: state.extra as Transaction?),
+    ),
+    GoRoute(
+      path: AppRoutes.transactionDetail,
+      name: 'transactionDetail',
+      builder: (context, state) =>
+          TransactionDetailScreen(transaction: state.extra as Transaction),
+    ),
+    GoRoute(
+      path: AppRoutes.transactionsSearch,
+      name: 'transactionsSearch',
+      builder: (context, state) => const TransactionSearchScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.transactionsFilter,
+      name: 'transactionsFilter',
+      builder: (context, state) =>
+          TransactionFilterScreen(args: state.extra as FilterScreenArgs),
     ),
     GoRoute(
       path: AppRoutes.categoryPicker,
