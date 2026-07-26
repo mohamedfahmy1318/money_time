@@ -22,10 +22,6 @@
     "auto_detected": "تم الاكتشاف تلقائيًا · اضغط للتغيير",
     "auto_device": "تلقائي (الجهاز)",
     "language_title": "اختر لغتك",
-    "currency_title": "عملتك",
-    "selected": "المحدد",
-    "symbol_front": "الرمز أولًا",
-    "symbol_back": "الرمز آخرًا",
     "enable_title": "فعّل Money Time",
     "enable_subtitle": "امنح هذه الأذونات مرة واحدة ليعمل التطبيق بكامل إمكاناته. تظل أنت المتحكم.",
     "notifications_title": "الإشعارات",
@@ -85,7 +81,6 @@
     "shortcuts_title": "سجّل أموالك تلقائيًا",
     "shortcuts_subtitle": "اربط Money Time باختصارات Apple — تتحوّل مدفوعات Apple Pay وتنبيهات البنك إلى قيود تلقائيًا على جهازك.",
     "connect_shortcuts": "الربط بالاختصارات",
-    "skip_for_now": "تخطّي الآن",
     "all_set_title": "كل شيء جاهز يا {name}!",
     "all_set_title_generic": "كل شيء جاهز!",
     "all_set_subtitle": "أموالك منظّمة وتعمل تلقائيًا. لنلقِ نظرة على لوحتك.",
@@ -193,7 +188,9 @@
     "shortcut_link": "ربط الاختصار",
     "connected": "متصل",
     "coming_soon": "قريبًا",
-    "guest": "ضيف"
+    "guest": "ضيف",
+    "sign_in": "تسجيل الدخول",
+    "log_out": "تسجيل الخروج"
   },
   "personal_info": {
     "title": "المعلومات الشخصية",
@@ -222,8 +219,45 @@
     "language": "اللغة",
     "appearance": "المظهر",
     "appearance_system": "النظام",
+    "appearance_dark": "داكن",
+    "appearance_light": "فاتح",
+    "reminder": "التذكير",
+    "notifications": "الإشعارات",
     "english": "English",
     "arabic": "العربية"
+  },
+  "main_currency": {
+    "change": "تغيير",
+    "save": "حفظ",
+    "unit_position": "موضع الوحدة",
+    "unit_front": "أمام",
+    "decimal_point": "الفاصلة العشرية",
+    "auto_detected": "🌐 تم اكتشافها تلقائيًا من جهازك"
+  },
+  "reminder": {
+    "title": "التذكير",
+    "info": "سيذكّرك موني تايم يوميًا بتسجيل مصروفاتك.",
+    "daily": "تذكير يومي"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "clear": "مسح",
+    "empty": "لا توجد إشعارات بعد"
+  },
+  "security": {
+    "enter_passcode": "أدخل رمز المرور",
+    "subtitle": "حافظ على خصوصية أموالك برمز مرور و Face ID."
+  },
+  "backup": {
+    "title": "النسخ الاحتياطي والبيانات",
+    "cloud_backup": "☁️ نسخة احتياطية سحابية",
+    "last_backup": "آخر نسخة · اليوم 08:20",
+    "auto_backup": "النسخ التلقائي مفعّل · 340 معاملة · مشفّرة",
+    "back_up_now": "انسخ الآن",
+    "restore": "استعادة",
+    "provider": "المزوّد",
+    "export": "تصدير",
+    "export_csv": "تصدير إلى Excel / CSV"
   },
   "transaction_settings": {
     "monthly_start_date": "بداية الشهر",

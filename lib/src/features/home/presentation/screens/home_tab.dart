@@ -42,10 +42,6 @@ class HomeTab extends StatelessWidget {
                     child: BudgetCard(budget: budget),
                   ),
                   SizedBox(height: 24.h),
-                  const CategoriesSection(
-                    categories: HomeSampleData.categories,
-                  ),
-                  SizedBox(height: 24.h),
                   RecentSection(
                     transactions: state.latest(3),
                     onSeeAll: () => context.push(AppRoutes.transactions),
@@ -53,6 +49,10 @@ class HomeTab extends StatelessWidget {
                       AppRoutes.transactionDetail,
                       extra: t,
                     ),
+                  ),
+                  SizedBox(height: 24.h),
+                  const CategoriesSection(
+                    categories: HomeSampleData.categories,
                   ),
                 ],
               ),

@@ -10,7 +10,6 @@ import 'package:mony_time/src/features/home/presentation/screens/main_screen.dar
 import 'package:mony_time/src/features/onboarding/presentation/screens/onboarding_page.dart';
 import 'package:mony_time/src/features/splash/presentation/screens/splash_screen.dart';
 import 'package:mony_time/src/features/setup/presentation/screens/language_screen.dart';
-import 'package:mony_time/src/features/setup/presentation/screens/currency_screen.dart';
 import 'package:mony_time/src/features/setup/presentation/screens/enable_features_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/connect_shortcuts_screen.dart';
 import 'package:mony_time/src/features/welcome/presentation/screens/all_set_screen.dart';
@@ -32,8 +31,15 @@ import 'package:mony_time/src/features/profile/presentation/screens/settings_scr
 import 'package:mony_time/src/features/profile/presentation/screens/transaction_settings_screen.dart';
 import 'package:mony_time/src/features/profile/presentation/screens/recurring_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/category_manage_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/main_currency_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/appearance_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/reminder_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/notifications_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/security_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/backup_screen.dart';
 import 'package:mony_time/src/shared/enums/transaction_type.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
+import 'package:mony_time/src/features/auth/presentation/models/auth_gate.dart';
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
@@ -55,11 +61,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LanguageScreen(),
     ),
     GoRoute(
-      path: AppRoutes.currency,
-      name: 'currency',
-      builder: (context, state) => const CurrencyScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.enableFeatures,
       name: 'enableFeatures',
       builder: (context, state) => const EnableFeaturesScreen(),
@@ -67,12 +68,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.login,
       name: 'login',
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => LoginScreen(gate: state.extra as AuthGate?),
     ),
     GoRoute(
       path: AppRoutes.signup,
       name: 'signup',
-      builder: (context, state) => const SignupScreen(),
+      builder: (context, state) =>
+          SignupScreen(gate: state.extra as AuthGate?),
     ),
     GoRoute(
       path: AppRoutes.forgotPassword,
@@ -175,6 +177,36 @@ final GoRouter appRouter = GoRouter(
       name: 'categoryManage',
       builder: (context, state) =>
           CategoryManageScreen(type: state.extra as TransactionType),
+    ),
+    GoRoute(
+      path: AppRoutes.mainCurrency,
+      name: 'mainCurrency',
+      builder: (context, state) => const MainCurrencyScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.appearance,
+      name: 'appearance',
+      builder: (context, state) => const AppearanceScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.reminder,
+      name: 'reminder',
+      builder: (context, state) => const ReminderScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.notifications,
+      name: 'notifications',
+      builder: (context, state) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.security,
+      name: 'security',
+      builder: (context, state) => const SecurityScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.backup,
+      name: 'backup',
+      builder: (context, state) => const BackupScreen(),
     ),
   ],
 );

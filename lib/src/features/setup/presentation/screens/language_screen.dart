@@ -31,7 +31,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
       await context.setLocale(picked.locale!);
     }
     if (!mounted) return;
-    context.go(AppRoutes.currency);
+    context.go(AppRoutes.onboarding);
   }
 
   @override

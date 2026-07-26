@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/home/presentation/models/home_data.dart';
 import 'package:mony_time/src/features/home/presentation/widgets/category_chip.dart';
 import 'package:mony_time/src/features/home/presentation/widgets/section_header.dart';
@@ -37,7 +38,7 @@ class CategoriesSection extends StatelessWidget {
             Expanded(
               child: CategoryChip.add(
                 label: 'home.add'.tr(),
-                onTap: () => context.push(AppRoutes.addCategory),
+                onTap: () => context.guardedPush(AppRoutes.addCategory),
               ),
             ),
           ],

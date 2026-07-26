@@ -22,10 +22,6 @@
     "auto_detected": "Auto-detected · tap to change",
     "auto_device": "Auto (device)",
     "language_title": "Choose your language",
-    "currency_title": "Your Currency",
-    "selected": "Selected",
-    "symbol_front": "Symbol front",
-    "symbol_back": "Symbol back",
     "enable_title": "Enable Money Time",
     "enable_subtitle": "Grant these once so the app works its magic. You stay in control.",
     "notifications_title": "Notifications",
@@ -85,7 +81,6 @@
     "shortcuts_title": "Log money on autopilot",
     "shortcuts_subtitle": "Connect Money Time to Apple Shortcuts — your Apple Pay taps & bank alerts turn into entries automatically, on-device.",
     "connect_shortcuts": "Connect with Shortcuts",
-    "skip_for_now": "Skip for now",
     "all_set_title": "You're all set, {name}!",
     "all_set_title_generic": "You're all set!",
     "all_set_subtitle": "Your money, organised and on autopilot. Let's take a look at your dashboard.",
@@ -193,7 +188,9 @@
     "shortcut_link": "Shortcut Link",
     "connected": "Connected",
     "coming_soon": "Coming soon",
-    "guest": "Guest"
+    "guest": "Guest",
+    "sign_in": "Sign In",
+    "log_out": "Log Out"
   },
   "personal_info": {
     "title": "Personal Info",
@@ -222,8 +219,45 @@
     "language": "Language",
     "appearance": "Appearance",
     "appearance_system": "System",
+    "appearance_dark": "Dark",
+    "appearance_light": "Light",
+    "reminder": "Reminder",
+    "notifications": "Notifications",
     "english": "English",
     "arabic": "العربية"
+  },
+  "main_currency": {
+    "change": "Change",
+    "save": "Save",
+    "unit_position": "Unit position",
+    "unit_front": "Front",
+    "decimal_point": "Decimal point",
+    "auto_detected": "🌐 Auto-detected from your device"
+  },
+  "reminder": {
+    "title": "Reminder",
+    "info": "Money Time will remind you daily to log your spending.",
+    "daily": "Daily Reminder"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "clear": "Clear",
+    "empty": "No notifications yet"
+  },
+  "security": {
+    "enter_passcode": "Enter Passcode",
+    "subtitle": "Keep your finances private with a passcode & Face ID."
+  },
+  "backup": {
+    "title": "Backup & Data",
+    "cloud_backup": "☁️ Cloud Backup",
+    "last_backup": "Last backup · Today 08:20",
+    "auto_backup": "Auto-backup on · 340 transactions · encrypted",
+    "back_up_now": "Back up now",
+    "restore": "Restore",
+    "provider": "Provider",
+    "export": "Export",
+    "export_csv": "Export to Excel / CSV"
   },
   "transaction_settings": {
     "monthly_start_date": "Monthly Start Date",

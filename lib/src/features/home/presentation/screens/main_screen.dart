@@ -1,6 +1,6 @@
 import 'package:mony_time/src/imports/core_imports.dart';
-import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/home/presentation/screens/home_tab.dart';
 import 'package:mony_time/src/features/home/presentation/widgets/app_bottom_nav.dart';
 
@@ -50,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
               items: _items(),
               currentIndex: _index,
               onTap: (i) => setState(() => _index = i),
-              onAdd: () => context.push(AppRoutes.addTransaction),
+              onAdd: () => context.guardedPush(AppRoutes.addTransaction),
             ),
           ),
         ],

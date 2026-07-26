@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/budgets/presentation/cubits/budgets_cubit.dart';
 import 'package:mony_time/src/features/budgets/presentation/sections/budget_hero_card.dart';
 import 'package:mony_time/src/features/budgets/presentation/widgets/budget_progress_row.dart';
@@ -114,7 +115,7 @@ class BudgetTab extends StatelessWidget {
                                   final categorySpent =
                                       spentOn(budget.categoryLabel);
                                   return InkWell(
-                                    onTap: () => context.push(
+                                    onTap: () => context.guardedPush(
                                       AppRoutes.budgetEdit,
                                       extra: budget,
                                     ),

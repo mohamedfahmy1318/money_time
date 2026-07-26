@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/transactions/domain/entities/transaction.dart';
 import 'package:mony_time/src/features/transactions/presentation/cubits/transactions_cubit.dart';
 import 'package:mony_time/src/features/transactions/presentation/widgets/detail_row.dart';
@@ -188,7 +189,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       Expanded(
                         child: _DeleteButton(
                           isLoading: state.isSaving && _deleting,
-                          onTap: () => _confirmDelete(transaction),
+                          onTap: () =>
+                              context.guardedRun(() => _confirmDelete(transaction)),
                         ),
                       ),
                     ],
@@ -203,7 +205,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   }
 
   void _edit(Transaction transaction) =>
-      context.push(AppRoutes.addTransaction, extra: transaction);
+      context.guardedPush(AppRoutes.addTransaction, extra: transaction);
 }
 
 /// Soft-danger action: tinted red fill, red bold label.

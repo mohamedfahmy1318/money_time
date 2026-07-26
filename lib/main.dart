@@ -13,8 +13,9 @@ Future<void> main() async {
   // Arabic date symbols for DateFormat (English is built in).
   await initializeDateFormatting('ar');
   await dotenv.load(fileName: '.env');
-  
+
   await AppConfig.init();
+  await StorageService.instance.init();
 
   runApp(
     const LocalizationWrapper(

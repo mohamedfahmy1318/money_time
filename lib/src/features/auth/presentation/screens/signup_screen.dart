@@ -3,6 +3,8 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/auth_di.dart';
 import 'package:mony_time/src/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/models/auth_gate.dart';
 import 'package:mony_time/src/features/auth/presentation/sections/signup_form_section.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_footer_link.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_header.dart';
@@ -10,19 +12,25 @@ import 'package:mony_time/src/features/auth/presentation/widgets/auth_or_divider
 import 'package:mony_time/src/features/auth/presentation/widgets/social_auth_button.dart';
 
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  const SignupScreen({super.key, this.gate});
+
+  /// Set when a guest reached signup from a protected action — where to resume
+  /// once the account is created.
+  final AuthGate? gate;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AuthDi.authCubit(),
-      child: const _SignupBody(),
+      child: _SignupBody(gate: gate),
     );
   }
 }
 
 class _SignupBody extends StatefulWidget {
-  const _SignupBody();
+  const _SignupBody({this.gate});
+
+  final AuthGate? gate;
 
   @override
   State<_SignupBody> createState() => _SignupBodyState();
@@ -63,8 +71,18 @@ class _SignupBodyState extends State<_SignupBody> {
       case AuthStatus.failure:
         showToast(context, message: state.errorMessage ?? '', status: 'error');
       case AuthStatus.authenticated:
-        // Session is committed at the end of the welcome funnel, not here.
-        context.go(AppRoutes.connectShortcuts, extra: state.user);
+        final gate = widget.gate;
+        if (gate != null) {
+          // Resuming a protected action — commit now and skip the welcome
+          // funnel.
+          final user = state.user;
+          if (user != null) context.read<SessionCubit>().setUser(user);
+          context.pushReplacement(gate.returnRoute, extra: gate.returnExtra);
+        } else {
+          // Fresh account — session is committed at the end of the welcome
+          // funnel.
+          context.go(AppRoutes.connectShortcuts, extra: state.user);
+        }
       default:
         break;
     }

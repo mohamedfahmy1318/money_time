@@ -23,16 +23,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
-  /// Advances through the tour; the last slide hands off to first-run setup.
+  /// Advances through the tour; the last slide drops the guest onto home.
   void _onPrimaryPressed() {
     if (_index == _slides.length - 1) {
-      context.go(AppRoutes.language);
+      _finish(AppRoutes.home);
       return;
     }
     _pageController.nextPage(
       duration: AppDurations.normal,
       curve: AppCurves.standard,
     );
+  }
+
+  /// Marks first-run done and navigates. Home enters guest mode; login lets the
+  /// user sign in straight away.
+  Future<void> _finish(String route) async {
+    await AppPrefs.completeOnboarding();
+    if (!mounted) return;
+    context.go(route);
   }
 
   @override
@@ -50,7 +58,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             OnboardingActionsSection(
               isFirstSlide: _index == 0,
               onPrimaryPressed: _onPrimaryPressed,
-              onLoginPressed: () => context.go(AppRoutes.login),
+              onLoginPressed: () => _finish(AppRoutes.login),
             ),
             SizedBox(height: 24.h),
           ],

@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/budgets/domain/entities/budget.dart';
 import 'package:mony_time/src/features/budgets/presentation/cubits/budgets_cubit.dart';
 import 'package:mony_time/src/features/transactions/presentation/widgets/month_stepper.dart';
@@ -80,7 +81,7 @@ class _BudgetRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.push(AppRoutes.budgetEdit, extra: budget),
+      onTap: () => context.guardedPush(AppRoutes.budgetEdit, extra: budget),
       child: SizedBox(
         height: 47.h,
         child: Padding(

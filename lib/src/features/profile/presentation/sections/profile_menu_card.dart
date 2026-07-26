@@ -1,6 +1,8 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/profile_menu_row.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/soft_pill.dart';
 
@@ -8,18 +10,19 @@ import 'package:mony_time/src/features/profile/presentation/widgets/soft_pill.da
 class ProfileMenuCard extends StatelessWidget {
   const ProfileMenuCard({super.key});
 
-  void _comingSoon(BuildContext context) =>
-      showToast(context, message: 'profile.coming_soon'.tr(), status: 'info');
-
   @override
   Widget build(BuildContext context) {
+    final isAuthed = context.select<SessionCubit, bool>(
+      (c) => c.state.status == SessionStatus.authenticated,
+    );
+
     return AppSoftCard(
       child: Column(
         children: [
           ProfileMenuRow(
             icon: Icons.person_outline_rounded,
             label: 'profile.personal_info'.tr(),
-            onTap: () => context.push(AppRoutes.personalInfo),
+            onTap: () => context.guardedPush(AppRoutes.personalInfo),
           ),
           _divider(context),
           ProfileMenuRow(
@@ -31,13 +34,13 @@ class ProfileMenuCard extends StatelessWidget {
           ProfileMenuRow(
             icon: Icons.shield_outlined,
             label: 'profile.security'.tr(),
-            onTap: () => _comingSoon(context),
+            onTap: () => context.guardedPush(AppRoutes.security),
           ),
           _divider(context),
           ProfileMenuRow(
             icon: Icons.cloud_sync_outlined,
             label: 'profile.backup'.tr(),
-            onTap: () => _comingSoon(context),
+            onTap: () => context.guardedPush(AppRoutes.backup),
           ),
           _divider(context),
           ProfileMenuRow(
@@ -49,6 +52,14 @@ class ProfileMenuCard extends StatelessWidget {
               trailingIcon: Icons.check_rounded,
             ),
           ),
+          if (isAuthed) ...[
+            _divider(context),
+            ProfileMenuRow(
+              icon: Icons.logout_rounded,
+              label: 'profile.log_out'.tr(),
+              onTap: () => context.read<SessionCubit>().logout(),
+            ),
+          ],
         ],
       ),
     );

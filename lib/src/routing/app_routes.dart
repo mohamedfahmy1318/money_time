@@ -9,7 +9,6 @@ abstract final class AppRoutes {
   static const String home = '/';
   static const String onboarding = '/onboarding';
   static const String language = '/language';
-  static const String currency = '/currency';
   static const String enableFeatures = '/enable-features';
   static const String login = '/login';
   static const String signup = '/signup';
@@ -20,6 +19,12 @@ abstract final class AppRoutes {
   static const String transactionSettings = '/transaction-settings';
   static const String recurring = '/recurring';
   static const String categoryManage = '/category-manage';
+  static const String mainCurrency = '/main-currency';
+  static const String appearance = '/appearance';
+  static const String reminder = '/reminder';
+  static const String notifications = '/notifications';
+  static const String security = '/security';
+  static const String backup = '/backup';
   static const String allSet = '/all-set';
   static const String addTransaction = '/add-transaction';
   static const String transactions = '/transactions';

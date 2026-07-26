@@ -26,9 +26,8 @@ class AllSetScreen extends StatelessWidget {
     final u = user;
     if (u != null) {
       context.read<SessionCubit>().setUser(u);
-    } else {
-      context.go(AppRoutes.home);
     }
+    context.go(AppRoutes.home);
   }
 
   @override

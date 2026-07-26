@@ -3,6 +3,8 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/auth_di.dart';
 import 'package:mony_time/src/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
+import 'package:mony_time/src/features/auth/presentation/models/auth_gate.dart';
 import 'package:mony_time/src/features/auth/presentation/sections/login_form_section.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_footer_link.dart';
 import 'package:mony_time/src/features/auth/presentation/widgets/auth_header.dart';
@@ -11,19 +13,25 @@ import 'package:mony_time/src/features/auth/presentation/widgets/auth_or_divider
 import 'package:mony_time/src/features/auth/presentation/widgets/social_auth_button.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.gate});
+
+  /// Set when a guest reached login from a protected action — where to resume
+  /// once signed in.
+  final AuthGate? gate;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AuthDi.authCubit(),
-      child: const _LoginBody(),
+      child: _LoginBody(gate: gate),
     );
   }
 }
 
 class _LoginBody extends StatefulWidget {
-  const _LoginBody();
+  const _LoginBody({this.gate});
+
+  final AuthGate? gate;
 
   @override
   State<_LoginBody> createState() => _LoginBodyState();
@@ -55,8 +63,16 @@ class _LoginBodyState extends State<_LoginBody> {
       case AuthStatus.failure:
         showToast(context, message: state.errorMessage ?? '', status: 'error');
       case AuthStatus.authenticated:
-        // Session is committed at the end of the welcome funnel, not here.
-        context.go(AppRoutes.connectShortcuts, extra: state.user);
+        final user = state.user;
+        if (user != null) context.read<SessionCubit>().setUser(user);
+        final gate = widget.gate;
+        // Returning sign-in skips the welcome funnel: resume the pending action
+        // if any, otherwise land on home.
+        if (gate != null) {
+          context.pushReplacement(gate.returnRoute, extra: gate.returnExtra);
+        } else {
+          context.go(AppRoutes.home);
+        }
       default:
         break;
     }
@@ -118,7 +134,8 @@ class _LoginBodyState extends State<_LoginBody> {
                   AuthFooterLink(
                     prompt: 'auth.dont_have_account'.tr(),
                     action: 'auth.sign_up'.tr(),
-                    onTap: () => context.push(AppRoutes.signup),
+                    onTap: () =>
+                        context.push(AppRoutes.signup, extra: widget.gate),
                   ),
                   SizedBox(height: 16.h),
                 ],

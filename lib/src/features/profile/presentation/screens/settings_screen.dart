@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/settings_section.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/profile_menu_row.dart';
 
@@ -66,7 +67,7 @@ class SettingsScreen extends StatelessWidget {
                   ProfileMenuRow(
                     icon: Icons.add_rounded,
                     label: 'settings.income_categories'.tr(),
-                    onTap: () => context.push(
+                    onTap: () => context.guardedPush(
                       AppRoutes.categoryManage,
                       extra: TransactionType.income,
                     ),
@@ -74,7 +75,7 @@ class SettingsScreen extends StatelessWidget {
                   ProfileMenuRow(
                     icon: Icons.remove_rounded,
                     label: 'settings.expense_categories'.tr(),
-                    onTap: () => context.push(
+                    onTap: () => context.guardedPush(
                       AppRoutes.categoryManage,
                       extra: TransactionType.expense,
                     ),
@@ -93,7 +94,7 @@ class SettingsScreen extends StatelessWidget {
                   ProfileMenuRow(
                     icon: Icons.currency_exchange_rounded,
                     label: 'settings.main_currency'.tr(),
-                    onTap: () => _comingSoon(context),
+                    onTap: () => context.push(AppRoutes.mainCurrency),
                     trailing: _valueLabel(context, 'EGP'),
                   ),
                   ProfileMenuRow(
@@ -105,9 +106,19 @@ class SettingsScreen extends StatelessWidget {
                   ProfileMenuRow(
                     icon: Icons.palette_outlined,
                     label: 'settings.appearance'.tr(),
-                    onTap: () => _comingSoon(context),
+                    onTap: () => context.push(AppRoutes.appearance),
                     trailing:
                         _valueLabel(context, 'settings.appearance_system'.tr()),
+                  ),
+                  ProfileMenuRow(
+                    icon: Icons.alarm_rounded,
+                    label: 'settings.reminder'.tr(),
+                    onTap: () => context.push(AppRoutes.reminder),
+                  ),
+                  ProfileMenuRow(
+                    icon: Icons.notifications_outlined,
+                    label: 'settings.notifications'.tr(),
+                    onTap: () => context.push(AppRoutes.notifications),
                   ),
                 ],
               ),

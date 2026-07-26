@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for network access in release/profile builds. The debug and
+         profile manifests declare this too, but release merges only from here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="money_time"
         android:name="${applicationName}"

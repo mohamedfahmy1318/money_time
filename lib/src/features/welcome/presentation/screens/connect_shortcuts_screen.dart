@@ -55,22 +55,6 @@ class ConnectShortcutsScreen extends StatelessWidget {
                 label: 'welcome.connect_shortcuts'.tr(),
                 onPressed: () => _next(context),
               ),
-              SizedBox(height: 10.h),
-              SizedBox(
-                width: double.infinity,
-                height: 49.h,
-                child: TextButton(
-                  onPressed: () => _next(context),
-                  child: Text(
-                    'welcome.skip_for_now'.tr(),
-                    style: context.textTheme.titleSmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.sp,
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(height: 24.h),
             ],
           ),

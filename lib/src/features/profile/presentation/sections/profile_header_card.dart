@@ -48,11 +48,39 @@ class ProfileHeaderCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8.h),
-          SoftPill(
-            label: 'profile.premium'.tr(),
-            leadingIcon: Icons.star_rounded,
-          ),
+          if (user == null)
+            _SignInButton()
+          else
+            SoftPill(
+              label: 'profile.premium'.tr(),
+              leadingIcon: Icons.star_rounded,
+            ),
         ],
+      ),
+    );
+  }
+}
+
+/// Guest call-to-action: routes to the sign-in flow.
+class _SignInButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push(AppRoutes.login),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 9.h),
+        decoration: const BoxDecoration(
+          gradient: AppGradients.primaryButton,
+          borderRadius: AppBorders.full,
+        ),
+        child: Text(
+          'profile.sign_in'.tr(),
+          style: context.textTheme.labelMedium?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 12.5.sp,
+          ),
+        ),
       ),
     );
   }
