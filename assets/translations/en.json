@@ -167,7 +167,8 @@
     "color": "COLOR",
     "save": "Save Category",
     "add": "Add",
-    "saved": "Category saved"
+    "saved": "Category saved",
+    "subcategory": "Subcategory"
   },
   "reports": {
     "title": "Reports",
@@ -193,6 +194,59 @@
     "connected": "Connected",
     "coming_soon": "Coming soon",
     "guest": "Guest"
+  },
+  "personal_info": {
+    "title": "Personal Info",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "plan": "Plan",
+    "premium": "Premium",
+    "name_hint": "Your name",
+    "phone_hint": "+20 100 000 0000",
+    "save": "Save Changes",
+    "saved": "Changes saved",
+    "photo_soon": "Photo upload coming soon"
+  },
+  "settings": {
+    "title": "Settings",
+    "section_transactions": "Transactions",
+    "section_categories": "Categories & Accounts",
+    "section_app": "App",
+    "transaction_settings": "Transaction Settings",
+    "repeat_setting": "Repeat Setting",
+    "income_categories": "Income Categories",
+    "expense_categories": "Expense Categories",
+    "budget_categories": "Budget & Categories",
+    "main_currency": "Main Currency",
+    "language": "Language",
+    "appearance": "Appearance",
+    "appearance_system": "System",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "transaction_settings": {
+    "monthly_start_date": "Monthly Start Date",
+    "weekly_start_day": "Weekly Start Day",
+    "carry_over": "Carry-over",
+    "period_setting": "Period Setting",
+    "income_expense_color": "Income / Expense Color",
+    "autocomplete": "Autocomplete",
+    "start_screen": "Start Screen",
+    "input_order": "Input order",
+    "value_sunday": "Sunday",
+    "value_off": "Off",
+    "value_on": "On",
+    "value_monthly": "Monthly",
+    "value_default": "Default",
+    "value_daily": "Daily",
+    "value_from_amount": "From Amount"
+  },
+  "recurring": {
+    "title": "Repeat / Recurring",
+    "timing": "Timing of reflection",
+    "timing_value": "On the date",
+    "active": "Active recurring"
   },
   "budgets": {
     "title": "Budget",

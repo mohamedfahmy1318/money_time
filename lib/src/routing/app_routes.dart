@@ -15,6 +15,11 @@ abstract final class AppRoutes {
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
   static const String connectShortcuts = '/connect-shortcuts';
+  static const String personalInfo = '/personal-info';
+  static const String settings = '/settings';
+  static const String transactionSettings = '/transaction-settings';
+  static const String recurring = '/recurring';
+  static const String categoryManage = '/category-manage';
   static const String allSet = '/all-set';
   static const String addTransaction = '/add-transaction';
   static const String transactions = '/transactions';

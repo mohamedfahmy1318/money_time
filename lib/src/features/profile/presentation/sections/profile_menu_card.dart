@@ -19,13 +19,13 @@ class ProfileMenuCard extends StatelessWidget {
           ProfileMenuRow(
             icon: Icons.person_outline_rounded,
             label: 'profile.personal_info'.tr(),
-            onTap: () => _comingSoon(context),
+            onTap: () => context.push(AppRoutes.personalInfo),
           ),
           _divider(context),
           ProfileMenuRow(
             icon: Icons.settings_outlined,
             label: 'profile.settings'.tr(),
-            onTap: () => _comingSoon(context),
+            onTap: () => context.push(AppRoutes.settings),
           ),
           _divider(context),
           ProfileMenuRow(

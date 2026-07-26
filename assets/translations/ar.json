@@ -167,7 +167,8 @@
     "color": "اللون",
     "save": "حفظ الفئة",
     "add": "إضافة",
-    "saved": "تم حفظ الفئة"
+    "saved": "تم حفظ الفئة",
+    "subcategory": "فئة فرعية"
   },
   "reports": {
     "title": "التقارير",
@@ -193,6 +194,59 @@
     "connected": "متصل",
     "coming_soon": "قريبًا",
     "guest": "ضيف"
+  },
+  "personal_info": {
+    "title": "المعلومات الشخصية",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "plan": "الخطة",
+    "premium": "مميز",
+    "name_hint": "اسمك",
+    "phone_hint": "+20 100 000 0000",
+    "save": "حفظ التغييرات",
+    "saved": "تم حفظ التغييرات",
+    "photo_soon": "رفع الصورة قريبًا"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "section_transactions": "المعاملات",
+    "section_categories": "الفئات والحسابات",
+    "section_app": "التطبيق",
+    "transaction_settings": "إعدادات المعاملات",
+    "repeat_setting": "إعداد التكرار",
+    "income_categories": "فئات الدخل",
+    "expense_categories": "فئات المصروفات",
+    "budget_categories": "الميزانية والفئات",
+    "main_currency": "العملة الرئيسية",
+    "language": "اللغة",
+    "appearance": "المظهر",
+    "appearance_system": "النظام",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "transaction_settings": {
+    "monthly_start_date": "بداية الشهر",
+    "weekly_start_day": "بداية الأسبوع",
+    "carry_over": "الترحيل",
+    "period_setting": "إعداد الفترة",
+    "income_expense_color": "لون الدخل / المصروف",
+    "autocomplete": "الإكمال التلقائي",
+    "start_screen": "الشاشة الافتتاحية",
+    "input_order": "ترتيب الإدخال",
+    "value_sunday": "الأحد",
+    "value_off": "إيقاف",
+    "value_on": "تشغيل",
+    "value_monthly": "شهري",
+    "value_default": "افتراضي",
+    "value_daily": "يومي",
+    "value_from_amount": "من المبلغ"
+  },
+  "recurring": {
+    "title": "التكرار / المتكرر",
+    "timing": "توقيت الاحتساب",
+    "timing_value": "في التاريخ",
+    "active": "المتكررات النشطة"
   },
   "budgets": {
     "title": "الميزانية",

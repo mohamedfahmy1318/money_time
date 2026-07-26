@@ -15,6 +15,14 @@ class AppCategory {
 /// the backend exists. Names are plain strings (like [HomeSampleData]) — they
 /// become user data later, not translation keys.
 abstract final class CategorySampleData {
+  /// Income categories shown on the income management screen (Figma order).
+  static const incomeCategories = <AppCategory>[
+    AppCategory(emoji: '🤑', label: 'Allowance'),
+    AppCategory(emoji: '💰', label: 'Salary'),
+    AppCategory(emoji: '💵', label: 'Petty cash'),
+    AppCategory(emoji: '🥇', label: 'Bonus'),
+  ];
+
   /// Categories shown in the picker grid (Figma order).
   static const categories = <AppCategory>[
     AppCategory(emoji: '🍜', label: 'Food'),

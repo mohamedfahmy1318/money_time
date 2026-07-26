@@ -27,8 +27,13 @@ import 'package:mony_time/src/features/budgets/presentation/screens/budget_edit_
 import 'package:mony_time/src/features/categories/presentation/screens/add_category_screen.dart';
 import 'package:mony_time/src/features/categories/presentation/screens/category_picker_screen.dart';
 import 'package:mony_time/src/features/reports/presentation/screens/total_stats_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/personal_info_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/settings_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/transaction_settings_screen.dart';
+import 'package:mony_time/src/features/profile/presentation/screens/recurring_screen.dart';
+import 'package:mony_time/src/features/categories/presentation/screens/category_manage_screen.dart';
+import 'package:mony_time/src/shared/enums/transaction_type.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
-
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
@@ -144,6 +149,32 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.totalStats,
       name: 'totalStats',
       builder: (context, state) => const TotalStatsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.personalInfo,
+      name: 'personalInfo',
+      builder: (context, state) => const PersonalInfoScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.settings,
+      name: 'settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.transactionSettings,
+      name: 'transactionSettings',
+      builder: (context, state) => const TransactionSettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.recurring,
+      name: 'recurring',
+      builder: (context, state) => const RecurringScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.categoryManage,
+      name: 'categoryManage',
+      builder: (context, state) =>
+          CategoryManageScreen(type: state.extra as TransactionType),
     ),
   ],
 );
