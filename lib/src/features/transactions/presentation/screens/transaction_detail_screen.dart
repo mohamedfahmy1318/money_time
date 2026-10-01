@@ -157,7 +157,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         DetailRow(
                           label: 'transactions.source'.tr(),
                           value: transaction.isAuto
-                              ? '⚡ ${'transactions.auto_source'.tr()}'
+                              ? '⚡ ${'transactions.auto_source'.tr(namedArgs: {'source': transaction.source})}'
                               : transaction.source,
                           valueColor: transaction.isAuto
                               ? context.colors.primary

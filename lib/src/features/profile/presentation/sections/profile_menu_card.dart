@@ -3,10 +3,11 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/presentation/cubits/session_cubit.dart';
 import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/cubits/bank_sync_cubit.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/profile_menu_row.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/soft_pill.dart';
 
-/// The profile settings menu: account rows plus the connected-shortcut row.
+/// The profile settings menu: account rows plus the bank-messages link row.
 class ProfileMenuCard extends StatelessWidget {
   const ProfileMenuCard({super.key});
 
@@ -44,13 +45,10 @@ class ProfileMenuCard extends StatelessWidget {
           ),
           _divider(context),
           ProfileMenuRow(
-            icon: Icons.bolt_rounded,
+            icon: Icons.sms_outlined,
             label: 'profile.shortcut_link'.tr(),
-            onTap: () => context.push(AppRoutes.connectShortcuts),
-            trailing: SoftPill(
-              label: 'profile.connected'.tr(),
-              trailingIcon: Icons.check_rounded,
-            ),
+            onTap: () => context.push(AppRoutes.bankLink),
+            trailing: const _BankLinkStatus(),
           ),
           if (isAuthed) ...[
             _divider(context),
@@ -70,4 +68,38 @@ class ProfileMenuCard extends StatelessWidget {
         thickness: 1,
         color: context.colors.outlineVariant,
       );
+}
+
+/// Live link state on the bank-messages row: pending count, Connected, or a
+/// muted Connect prompt.
+class _BankLinkStatus extends StatelessWidget {
+  const _BankLinkStatus();
+
+  @override
+  Widget build(BuildContext context) {
+    final (connected, pending) = context.select<BankSyncCubit, (bool, int)>(
+      (c) => (c.state.isConnected, c.state.pending.length),
+    );
+
+    if (connected && pending > 0) {
+      return SoftPill(
+        label: 'bank_sync.new_count'.tr(namedArgs: {'count': '$pending'}),
+        leadingIcon: Icons.mark_chat_unread_outlined,
+      );
+    }
+    if (connected) {
+      return SoftPill(
+        label: 'profile.connected'.tr(),
+        trailingIcon: Icons.check_rounded,
+      );
+    }
+    return Text(
+      'bank_sync.connect'.tr(),
+      style: context.textTheme.labelMedium?.copyWith(
+        color: context.colors.primary,
+        fontWeight: FontWeight.bold,
+        fontSize: 12.sp,
+      ),
+    );
+  }
 }

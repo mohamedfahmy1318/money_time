@@ -39,6 +39,11 @@ import 'package:mony_time/src/features/profile/presentation/screens/security_scr
 import 'package:mony_time/src/features/profile/presentation/screens/backup_screen.dart';
 import 'package:mony_time/src/shared/enums/transaction_type.dart';
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
+import 'package:mony_time/src/features/bank_sync/domain/entities/bank_message.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/screens/bank_inbox_screen.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/screens/bank_link_screen.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/screens/bank_link_setup_screen.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/screens/bank_message_screen.dart';
 import 'package:mony_time/src/features/auth/presentation/models/auth_gate.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -207,6 +212,29 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.backup,
       name: 'backup',
       builder: (context, state) => const BackupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.bankLink,
+      name: 'bankLink',
+      builder: (context, state) => const BankLinkScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.bankLinkSetup,
+      name: 'bankLinkSetup',
+      // extra `true` = opened from the post-signup welcome funnel.
+      builder: (context, state) =>
+          BankLinkSetupScreen(inFunnel: state.extra == true),
+    ),
+    GoRoute(
+      path: AppRoutes.bankInbox,
+      name: 'bankInbox',
+      builder: (context, state) => const BankInboxScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.bankMessage,
+      name: 'bankMessage',
+      builder: (context, state) =>
+          BankMessageScreen(message: state.extra as BankMessage),
     ),
   ],
 );

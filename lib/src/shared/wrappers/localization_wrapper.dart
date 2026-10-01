@@ -18,6 +18,9 @@ class LocalizationWrapper extends StatelessWidget {
       ],
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
+      // Use each language's CLDR plural rules — Arabic needs its few/many
+      // forms (٣ رسائل vs ١١ رسالة), which the default fallback never picks.
+      ignorePluralRules: false,
       child: child,
     );
   }

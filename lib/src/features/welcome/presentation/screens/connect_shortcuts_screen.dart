@@ -3,9 +3,10 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 
 import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 
-/// Post-auth prompt to connect Apple Shortcuts. Both actions carry the freshly
-/// authenticated [user] forward to the "all set" screen; the session isn't
-/// marked authenticated until the very end of the funnel.
+/// Post-auth prompt to link bank SMS alerts. Connecting runs the bank-link
+/// setup in funnel mode and comes back here; either way the freshly
+/// authenticated [user] is carried forward to the "all set" screen — the
+/// session isn't marked authenticated until the very end of the funnel.
 class ConnectShortcutsScreen extends StatelessWidget {
   const ConnectShortcutsScreen({super.key, this.user});
 
@@ -13,6 +14,12 @@ class ConnectShortcutsScreen extends StatelessWidget {
 
   void _next(BuildContext context) =>
       context.go(AppRoutes.allSet, extra: user);
+
+  Future<void> _connect(BuildContext context) async {
+    await context.push<bool>(AppRoutes.bankLinkSetup, extra: true);
+    if (!context.mounted) return;
+    _next(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +60,21 @@ class ConnectShortcutsScreen extends StatelessWidget {
               const Spacer(),
               AppGradientButton(
                 label: 'welcome.connect_shortcuts'.tr(),
-                onPressed: () => _next(context),
+                onPressed: () => _connect(context),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 4.h),
+              TextButton(
+                onPressed: () => _next(context),
+                child: Text(
+                  'welcome.set_up_later'.tr(),
+                  style: context.textTheme.labelMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.5.sp,
+                  ),
+                ),
+              ),
+              SizedBox(height: 12.h),
             ],
           ),
         ),

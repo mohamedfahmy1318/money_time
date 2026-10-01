@@ -1,6 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 import 'package:mony_time/src/imports/packages_imports.dart';
 
+import 'package:mony_time/src/features/bank_sync/presentation/widgets/pending_messages_banner.dart';
 import 'package:mony_time/src/features/home/presentation/models/home_data.dart';
 import 'package:mony_time/src/features/home/presentation/sections/budget_card.dart';
 import 'package:mony_time/src/features/home/presentation/sections/categories_section.dart';
@@ -41,6 +42,7 @@ class HomeTab extends StatelessWidget {
                     onTap: () => context.push(AppRoutes.totalStats),
                     child: BudgetCard(budget: budget),
                   ),
+                  const PendingMessagesBanner(),
                   SizedBox(height: 24.h),
                   RecentSection(
                     transactions: state.latest(3),

@@ -5,6 +5,8 @@ import '../../features/transactions/transactions_di.dart';
 import '../../features/transactions/presentation/cubits/transactions_cubit.dart';
 import '../../features/budgets/budgets_di.dart';
 import '../../features/budgets/presentation/cubits/budgets_cubit.dart';
+import '../../features/bank_sync/bank_sync_di.dart';
+import '../../features/bank_sync/presentation/cubits/bank_sync_cubit.dart';
 
 /// Registers app-wide cubits. Feature-scoped cubits are provided per screen.
 class StateWrapper extends StatelessWidget {
@@ -25,6 +27,9 @@ class StateWrapper extends StatelessWidget {
         ),
         BlocProvider<BudgetsCubit>(
           create: (_) => BudgetsDi.budgetsCubit(),
+        ),
+        BlocProvider<BankSyncCubit>(
+          create: (_) => BankSyncDi.bankSyncCubit(),
         ),
       ],
       child: child,

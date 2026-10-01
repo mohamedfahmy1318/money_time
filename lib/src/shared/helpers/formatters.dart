@@ -54,4 +54,19 @@ abstract final class AppDate {
   /// `23 May` — search result subtitles, calendar day card titles.
   static String shortDate(DateTime d, String locale) =>
       DateFormat('d MMM', locale).format(d);
+
+  /// `2:32 PM` / `2:32 م`.
+  static String time(DateTime d, String locale) =>
+      DateFormat('h:mm a', locale).format(d);
+
+  /// `Today · 2:32 PM`, `Yesterday · 9:10 AM`, `21 Sep · 6:04 PM` — bank
+  /// message timestamps.
+  static String relative(DateTime d, String locale) {
+    final day = d.isToday
+        ? 'shared.today'.tr()
+        : d.isYesterday
+            ? 'shared.yesterday'.tr()
+            : shortDate(d, locale);
+    return '$day · ${time(d, locale)}';
+  }
 }

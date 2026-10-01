@@ -172,6 +172,34 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     );
   }
 
+  /// Adds several transactions as one action (bank-message import). Stops at
+  /// the first failure; whatever was stored before it stays in the list.
+  Future<void> addTransactions(List<Transaction> transactions) async {
+    emit(state.copyWith(action: TransactionsAction.saving));
+
+    final stored = <Transaction>[];
+    for (final transaction in transactions) {
+      final result = await _addTransaction(transaction);
+      final failure = result.fold<Failure?>((f) => f, (t) {
+        stored.add(t);
+        return null;
+      });
+      if (failure != null) {
+        emit(state.copyWith(
+          action: TransactionsAction.failure,
+          errorMessage: failure.message,
+          transactions: _sorted([...state.transactions, ...stored]),
+        ));
+        return;
+      }
+    }
+
+    emit(state.copyWith(
+      action: TransactionsAction.saveSuccess,
+      transactions: _sorted([...state.transactions, ...stored]),
+    ));
+  }
+
   Future<void> updateTransaction(Transaction transaction) async {
     emit(state.copyWith(action: TransactionsAction.saving));
 

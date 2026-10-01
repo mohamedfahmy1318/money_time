@@ -36,4 +36,8 @@ abstract final class AppRoutes {
   static const String categoryPicker = '/category-picker';
   static const String addCategory = '/add-category';
   static const String totalStats = '/total-stats';
+  static const String bankLink = '/bank-link';
+  static const String bankLinkSetup = '/bank-link-setup';
+  static const String bankInbox = '/bank-inbox';
+  static const String bankMessage = '/bank-message';
 }

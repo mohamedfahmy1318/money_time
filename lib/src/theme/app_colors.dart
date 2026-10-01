@@ -10,29 +10,29 @@ abstract final class AppColors {
 
   // ── Brand — emerald ────────────────────────────────────────────────────────
   /// Primary brand colour. Active indicator, icon accents, button base.
-  static const Color primary = Color(0xFF94A3B8);
+  static const Color primary = Color(0xFF2563EB);
 
   /// Gradient start on the primary CTA.
-  static const Color primaryLight = Color(0xFF94A3B8);
+  static const Color primaryLight = Color(0xFF2563EB);
 
   /// Gradient end on the primary CTA.
-  static const Color primaryDark = Color(0xFF94A3B8);
+  static const Color primaryDark = Color(0xFF2563EB);
 
   /// Splash gradient midpoint.
-  static const Color primaryMid = Color(0xFF94A3B8);
+  static const Color primaryMid = Color(0xFF2563EB);
 
   /// Splash gradient end — deepest brand shade.
-  static const Color primaryDeep = Color(0xFF94A3B8);
+  static const Color primaryDeep = Color(0xFF2563EB);
 
   /// Soft mint halo behind onboarding illustrations; also the tonal fill of a
   /// selected list row.
-  static const Color primarySoft = Color(0xFFE9FBF3);
+  static const Color primarySoft = Color(0xFF2563EB);
 
   /// Text/icon colour on top of [primarySoft].
-  static const Color primaryOnSoft = Color(0xFF94A3B8);
+  static const Color primaryOnSoft = Color(0xFF2563EB);
 
   /// Muted mint used for text on the brand gradient (splash tagline).
-  static const Color onPrimaryMuted = Color(0xFFD6F5E8);
+  static const Color onPrimaryMuted = Color(0xFF2563EB);
 
   // ── Neutrals ───────────────────────────────────────────────────────────────
   /// Page background.
