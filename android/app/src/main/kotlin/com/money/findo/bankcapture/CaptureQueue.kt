@@ -1,4 +1,4 @@
-package com.example.money_time.bankcapture
+package com.money.findo.bankcapture
 
 import android.content.Context
 import org.json.JSONArray

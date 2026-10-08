@@ -1,6 +1,6 @@
-package com.example.money_time
+package com.money.findo
 
-import com.example.money_time.bankcapture.BankCapturePlugin
+import com.money.findo.bankcapture.BankCapturePlugin
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 

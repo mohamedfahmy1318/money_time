@@ -326,13 +326,12 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
     };
   }
 
-  Widget _shortcutStep(BankSyncState state) {
-    final senders = [
-      for (final bank in state.banks)
-        if (_bankIds.contains(bank.id) && bank.senderIds.isNotEmpty)
-          bank.senderIds.first,
-    ];
+  /// Shortcuts can't filter on the alphanumeric sender ids banks use (only
+  /// on phone numbers), so the automation matches on a word every bank
+  /// alert carries; the App Intent then keeps only the linked banks.
+  static const _shortcutKeywords = ['جنيه', 'EGP', 'جم', 'ج.م'];
 
+  Widget _shortcutStep(BankSyncState state) {
     return _StepScroll(
       title: 'bank_sync.shortcut_title'.tr(),
       subtitle: 'bank_sync.shortcut_subtitle'.tr(),
@@ -354,10 +353,10 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
                   spacing: 6.w,
                   runSpacing: 6.h,
                   children: [
-                    for (final sender in senders)
+                    for (final keyword in _shortcutKeywords)
                       _CopyChip(
-                        label: sender,
-                        onTap: () => _copySender(sender),
+                        label: keyword,
+                        onTap: () => _copySender(keyword),
                       ),
                   ],
                 ),
