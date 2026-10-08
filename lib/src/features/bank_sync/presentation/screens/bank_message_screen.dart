@@ -4,14 +4,15 @@ import 'package:mony_time/src/imports/packages_imports.dart';
 import 'package:mony_time/src/features/auth/presentation/helpers/auth_actions.dart';
 import 'package:mony_time/src/features/bank_sync/domain/entities/bank.dart';
 import 'package:mony_time/src/features/bank_sync/domain/entities/bank_message.dart';
+import 'package:mony_time/src/features/bank_sync/domain/entities/bank_sync_results.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/cubits/bank_sync_cubit.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/helpers/bank_display.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/helpers/bank_import_flow.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/widgets/bank_avatar.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/widgets/bank_category_sheet.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/widgets/edit_value_sheet.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/widgets/note_banner.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/widgets/sms_bubble.dart';
-import 'package:mony_time/src/features/categories/presentation/models/category.dart';
 import 'package:mony_time/src/features/transactions/presentation/widgets/detail_row.dart';
 
 /// One bank message: the raw SMS, what we read out of it, and — while it is
@@ -30,15 +31,16 @@ class BankMessageScreen extends StatefulWidget {
 
 class _BankMessageScreenState extends State<BankMessageScreen>
     with BankImportFlow {
-  // User edits; null = keep what was read from the SMS.
+  // User edits; null = keep what the server read from the SMS. Only these
+  // are sent on import.
   TransactionType? _type;
   double? _amount;
   String? _merchant;
-  AppCategory? _category;
+  BankCategory? _category;
   DateTime? _date;
 
   @override
-  void onImported(int count) {
+  void onImported(int count, int skipped) {
     showToast(context, message: 'bank_sync.added_count'.plural(count));
     context.popOrGo(AppRoutes.bankInbox);
   }
@@ -74,17 +76,27 @@ class _BankMessageScreenState extends State<BankMessageScreen>
       title: 'bank_sync.edit_merchant'.tr(),
       initial: current,
       hint: 'bank_sync.merchant_hint'.tr(),
+      // Stored as the transaction note (≤ 500 on the server).
+      inputFormatters: [LengthLimitingTextInputFormatter(500)],
     );
     if (result != null) setState(() => _merchant = result);
   }
 
-  Future<void> _pickCategory(String currentLabel) async {
-    final result = await context.push<AppCategory>(
-      AppRoutes.categoryPicker,
-      extra: currentLabel,
+  Future<void> _pickCategory(TransactionType type, String? currentId) async {
+    final result = await showBankCategorySheet(
+      context,
+      type: type,
+      selectedId: currentId,
     );
     if (result != null) setState(() => _category = result);
   }
+
+  /// A category belongs to one type: switching type drops a picked category
+  /// of the other one (the server then picks the default for the new type).
+  void _setType(TransactionType type) => setState(() {
+        _type = type;
+        if (_category != null && _category!.type != type) _category = null;
+      });
 
   Future<void> _pickDate(DateTime current) async {
     final picked = await showDatePicker(
@@ -104,24 +116,28 @@ class _BankMessageScreenState extends State<BankMessageScreen>
         ));
   }
 
-  void _add(BankMessage message, Bank? bank) {
-    context.guardedRun(() => importMessages({
-          message.id: message.toTransaction(
-            bank,
-            type: _type,
-            amount: _amount,
-            categoryEmoji: _category?.emoji,
-            categoryLabel: _category?.label,
+  void _add(BankMessage message) {
+    final parsed = message.parsed;
+    context.guardedRun(() => importOne(
+          message,
+          overrides: ImportOverrides(
+            type: _type != parsed?.type ? _type : null,
+            amount: _amount != parsed?.amount ? _amount : null,
+            categoryId: _category?.id,
             date: _date,
-            note: _merchant,
+            note: _merchant != parsed?.merchant ? _merchant : null,
           ),
-        }));
+        ));
   }
 
-  void _ignore(BankMessage message) {
-    context.read<BankSyncCubit>().ignore(message.id);
-    showToast(context, message: 'bank_sync.ignored_toast'.tr(), status: 'info');
-    context.popOrGo(AppRoutes.bankInbox);
+  /// Ignore waits for the server before leaving: a failure keeps the user
+  /// here with the message, instead of a silent revert behind their back.
+  @override
+  void onStatusChanged(List<BankMessage> moved) {
+    super.onStatusChanged(moved);
+    if (moved.any((m) => m.status == BankMessageStatus.ignored)) {
+      context.popOrGo(AppRoutes.bankInbox);
+    }
   }
 
   @override
@@ -217,8 +233,15 @@ class _BankMessageScreenState extends State<BankMessageScreen>
     final type = _type ?? p.type;
     final amount = _amount ?? p.amount;
     final merchant = _merchant ?? p.merchant ?? '';
-    final emoji = _category?.emoji ?? p.categoryEmoji;
-    final label = _category?.label ?? p.categoryLabel;
+    // Type switched without a pick: the server files it under the default
+    // category of the new type.
+    final typeChanged = type != p.type;
+    final categoryValue = _category != null
+        ? '${_category!.emoji} ${_category!.name}'
+        : typeChanged
+            ? 'bank_sync.category_auto'.tr()
+            : message.categoryLine();
+    final categoryId = _category?.id ?? (typeChanged ? null : p.categoryId);
     final date = _date ?? message.occurredAt;
     final amountColor =
         type.isIncome ? context.colors.tertiary : context.colors.error;
@@ -254,8 +277,8 @@ class _BankMessageScreenState extends State<BankMessageScreen>
         fit: BoxFit.scaleDown,
         child: Text(
           signedMoneyWithSymbol(amount, isIncome: type.isIncome),
-textDirection: TextDirection.ltr,
-maxLines: 1,
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
           style: context.textTheme.headlineMedium?.copyWith(
             color: amountColor,
             fontWeight: FontWeight.bold,
@@ -280,7 +303,7 @@ maxLines: 1,
       if (editable) ...[
         TransactionTypeToggle(
           value: type,
-          onChanged: (t) => setState(() => _type = t),
+          onChanged: _setType,
           style: SegmentedToggleStyle.soft,
           order: const [TransactionType.expense, TransactionType.income],
         ),
@@ -304,8 +327,8 @@ maxLines: 1,
             ),
             DetailRow(
               label: 'transactions.category'.tr(),
-              value: '$emoji $label',
-              onTap: editable ? () => _pickCategory(label) : null,
+              value: categoryValue,
+              onTap: editable ? () => _pickCategory(type, categoryId) : null,
             ),
             DetailRow(
               label: 'transactions.date'.tr(),
@@ -343,7 +366,9 @@ maxLines: 1,
             Expanded(
               child: _SoftButton(
                 label: 'bank_sync.ignore'.tr(),
-                onTap: isImporting ? null : () => _ignore(message),
+                onTap: isImporting || isChangingStatus
+                    ? null
+                    : () => ignoreMessage(message),
               ),
             ),
             SizedBox(width: 10.w),
@@ -352,7 +377,7 @@ maxLines: 1,
               child: AppGradientButton(
                 label: 'bank_sync.add_transaction'.tr(),
                 isLoading: isImporting,
-                onPressed: () => _add(message, bank),
+                onPressed: () => _add(message),
               ),
             ),
           ],
@@ -374,7 +399,7 @@ maxLines: 1,
         return _SoftButton(
           label: 'bank_sync.restore_to_review'.tr(),
           accent: true,
-          onTap: () => context.read<BankSyncCubit>().restore(message.id),
+          onTap: isChangingStatus ? null : () => restoreMessage(message),
         );
     }
   }
@@ -396,11 +421,15 @@ class _SoftButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final fg = accent ? context.colors.primary : context.colors.onSurface;
 
-    return Opacity(
-      opacity: onTap == null ? 0.5 : 1,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      child: Opacity(
+        opacity: onTap == null ? 0.5 : 1,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
           height: 49.h,
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -420,6 +449,7 @@ class _SoftButton extends StatelessWidget {
               fontSize: 15.sp,
             ),
           ),
+        ),
         ),
       ),
     );

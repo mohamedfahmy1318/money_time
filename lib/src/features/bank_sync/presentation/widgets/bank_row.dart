@@ -46,7 +46,11 @@ class BankRow extends StatelessWidget {
                   SizedBox(height: 2.h),
                   Text(
                     'bank_sync.sender_label'
-                        .tr(namedArgs: {'sender': bank.senderIds.first}),
+                        .tr(namedArgs: {
+                      'sender': bank.senderIds.isEmpty
+                          ? bank.shortName
+                          : bank.senderIds.first,
+                    }),
                     style: context.textTheme.labelSmall?.copyWith(
                       color: context.colors.onSurfaceVariant,
                       fontSize: 11.sp,
@@ -80,7 +84,8 @@ class CheckDot extends StatelessWidget {
         shape: BoxShape.circle,
         color: selected ? context.colors.primary : Colors.transparent,
         border: Border.all(
-          color: selected ? context.colors.primary : context.colors.outlineVariant,
+          color:
+              selected ? context.colors.primary : context.colors.outlineVariant,
           width: 1.5,
         ),
       ),

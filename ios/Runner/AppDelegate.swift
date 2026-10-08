@@ -12,5 +12,9 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    // Bank-SMS capture: token + linked senders for the Shortcuts App Intent.
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "BankCapture") {
+      BankCaptureChannel.register(with: registrar.messenger())
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:mony_time/src/imports/core_imports.dart';
 
+import 'package:mony_time/src/config/api/api_session.dart';
+
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -10,6 +12,10 @@ class App extends StatelessWidget {
   }
 
   Widget _buildMaterialApp(BuildContext context) {
+    // EasyLocalization rebuilds App on every locale change: keep the API's
+    // Accept-Language (translated errors, category labels) on the UI language.
+    ApiSession.instance.language = context.locale.languageCode;
+
     return MaterialApp.router(
       title: 'mony_time',
       debugShowCheckedModeBanner: false,

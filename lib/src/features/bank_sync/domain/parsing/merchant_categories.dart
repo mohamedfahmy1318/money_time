@@ -12,7 +12,10 @@ abstract final class MerchantCategories {
   static final List<(RegExp, CategoryGuess)> _income = [
     (_rx(r'salary|payroll|راتب|مرتب'), (emoji: '💰', label: 'Salary')),
     (_rx(r'bonus|مكافأة|مكافاة|حافز'), (emoji: '🥇', label: 'Bonus')),
-    (_rx(r'refund|reversal|cashback|استرداد|مرتجع'), (emoji: '↩️', label: 'Refund')),
+    (
+      _rx(r'refund|reversal|cashback|استرداد|مرتجع'),
+      (emoji: '↩️', label: 'Refund')
+    ),
   ];
 
   static final List<(RegExp, CategoryGuess)> _expense = [

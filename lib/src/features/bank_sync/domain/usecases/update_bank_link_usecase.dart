@@ -7,5 +7,10 @@ class UpdateBankLinkUseCase {
 
   final BankSyncRepository _repository;
 
-  FutureEither<BankLink> call(BankLink link) => _repository.updateLink(link);
+  FutureEither<BankLink> call({
+    required List<String> bankIds,
+    required ImportMode mode,
+  }) {
+    return _repository.updateLink(bankIds: bankIds, mode: mode);
+  }
 }

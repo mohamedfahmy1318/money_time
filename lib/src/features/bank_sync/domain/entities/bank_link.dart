@@ -53,3 +53,21 @@ class BankLink extends Equatable {
   @override
   List<Object?> get props => [isConnected, method, bankIds, mode, connectedAt];
 }
+
+/// What `ensureCapture` left this device doing.
+enum CaptureOutcome {
+  /// Native capture holds a valid token for this link.
+  armed,
+
+  /// The link captures on a phone of the other platform (one live token per
+  /// account): this device stands down.
+  standingDown,
+
+  /// This device's token was revoked — another phone took over, or the
+  /// password changed. Capture waits for the user to claim it back.
+  revoked,
+}
+
+/// [outcome] plus how many SMS the catch-up scan just delivered (messages
+/// that arrived while the receiver was dead: force-stop, before first unlock).
+typedef CaptureReport = ({CaptureOutcome outcome, int caughtUp});

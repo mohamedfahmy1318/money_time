@@ -2,10 +2,21 @@
     <!-- Required for network access in release/profile builds. The debug and
          profile manifests declare this too, but release merges only from here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Bank messages: live capture of new bank alerts (RECEIVE_SMS) and the
+         wizard's 30-day import (READ_SMS). Restricted on Google Play: the
+         listing needs the SMS Permissions Declaration (core functionality:
+         expense tracking from bank SMS). Only the linked banks' senders are
+         read; see bankcapture/BankSmsReceiver.kt. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <!-- Captured bank SMS and the sealed ingest token stay out of backups
+         (res/xml/backup_rules.xml, data_extraction_rules.xml). -->
     <application
         android:label="money_time"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,6 +39,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Bank-SMS capture: runs even with the app closed; filters to the
+             linked banks' senders and queues delivery to WorkManager. -->
+        <receiver
+            android:name=".bankcapture.BankSmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

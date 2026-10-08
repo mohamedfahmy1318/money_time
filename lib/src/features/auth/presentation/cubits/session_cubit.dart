@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,14 +30,21 @@ class SessionCubit extends Cubit<SessionState> {
   SessionCubit({
     required GetCurrentUserUseCase getCurrentUser,
     required LogoutUseCase logout,
+    required Stream<void> sessionEnded,
   })  : _getCurrentUser = getCurrentUser,
         _logout = logout,
         super(const SessionState()) {
+    _sessionEnded = sessionEnded.listen((_) {
+      if (state.status == SessionStatus.authenticated) {
+        emit(const SessionState(status: SessionStatus.unauthenticated));
+      }
+    });
     checkSession();
   }
 
   final GetCurrentUserUseCase _getCurrentUser;
   final LogoutUseCase _logout;
+  late final StreamSubscription<void> _sessionEnded;
 
   Future<void> checkSession() async {
     final result = await _getCurrentUser();
@@ -59,5 +68,11 @@ class SessionCubit extends Cubit<SessionState> {
   Future<void> logout() async {
     await _logout();
     emit(const SessionState(status: SessionStatus.unauthenticated));
+  }
+
+  @override
+  Future<void> close() {
+    _sessionEnded.cancel();
+    return super.close();
   }
 }

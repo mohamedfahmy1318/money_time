@@ -37,21 +37,43 @@ class _PasteMessageSheet extends StatefulWidget {
 
 class _PasteMessageSheetState extends State<_PasteMessageSheet> {
   final _controller = TextEditingController();
+  final _chips = ScrollController();
   late Bank? _bank = widget.banks.isEmpty ? null : widget.banks.first;
   ParsedBankSms? _preview;
 
   @override
   void dispose() {
     _controller.dispose();
+    _chips.dispose();
     super.dispose();
   }
 
   void _onChanged(String text) {
+    final detected = _detectBank(text);
     setState(() {
       _preview = BankSyncDi.parseMessage(text);
-      _bank = _detectBank(text) ?? _bank;
+      _bank = detected ?? _bank;
     });
+    // A bank picked from the text may sit off-screen in the chip row.
+    if (detected != null) _revealChip(detected);
   }
+
+  void _revealChip(Bank bank) {
+    final index = widget.banks.indexWhere((b) => b.id == bank.id);
+    if (index < 0 || !_chips.hasClients) return;
+    final target = (index * _chipStride).clamp(
+      0.0,
+      _chips.position.maxScrollExtent,
+    );
+    _chips.animateTo(
+      target,
+      duration: AppDurations.normal,
+      curve: AppCurves.standard,
+    );
+  }
+
+  /// Chip width + gap — chips are fixed-size, so the row's offset is linear.
+  double get _chipStride => 88.w;
 
   /// Most alerts name their bank — preselect it so the user rarely has to.
   Bank? _detectBank(String text) {
@@ -76,7 +98,11 @@ class _PasteMessageSheetState extends State<_PasteMessageSheet> {
   void _submit() {
     final bank = _bank;
     Navigator.of(context).pop((
-      sender: bank?.senderIds.first ?? '',
+      sender: bank == null
+          ? ''
+          : bank.senderIds.isEmpty
+              ? bank.shortName
+              : bank.senderIds.first,
       body: _controller.text.trim(),
     ));
   }
@@ -125,6 +151,7 @@ class _PasteMessageSheetState extends State<_PasteMessageSheet> {
                 SizedBox(
                   height: 34.h,
                   child: ListView.separated(
+                    controller: _chips,
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.banks.length,
                     separatorBuilder: (_, __) => SizedBox(width: 8.w),
@@ -156,6 +183,9 @@ class _PasteMessageSheetState extends State<_PasteMessageSheet> {
                   expands: true,
                   maxLines: null,
                   minLines: null,
+                  // The server stores up to 2000 characters.
+                  maxLength: 2000,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   textAlignVertical: TextAlignVertical.top,
                   cursorColor: context.colors.primary,
                   style: context.textTheme.bodyMedium?.copyWith(
@@ -165,6 +195,7 @@ class _PasteMessageSheetState extends State<_PasteMessageSheet> {
                   ),
                   decoration: InputDecoration(
                     isCollapsed: true,
+                    counterText: '',
                     filled: false,
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -299,7 +330,7 @@ class _PreviewCard extends StatelessWidget {
               color: context.colors.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Text(parsed.categoryEmoji,
+            child: Text(parsed.categoryEmoji ?? '🧾',
                 style: TextStyle(fontSize: 15.sp)),
           ),
           SizedBox(width: 10.w),
@@ -319,7 +350,7 @@ class _PreviewCard extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  parsed.merchant ?? parsed.categoryLabel,
+                  parsed.merchant ?? parsed.categoryLabel ?? '—',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.titleSmall?.copyWith(

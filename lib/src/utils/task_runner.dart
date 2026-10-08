@@ -34,9 +34,6 @@ FutureEither<T> runTask<T>(
     return right(result);
   } catch (error, stackTrace) {
     AppLogger.error('Task execution failed $error', [error, stackTrace]);
-    final errorMessage = AppErrorHandler.format(error);
-
-    // Depending on logic, map error strings/types to specific Failure variants
-    return left(ServerFailure(errorMessage, error: error));
+    return left(AppErrorHandler.toFailure(error));
   }
 }

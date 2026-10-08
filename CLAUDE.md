@@ -29,11 +29,11 @@ dart run flutter_native_splash:create --path=flutter_native_splash.yaml
 
 No `build_runner` / codegen step exists for this stack — do not add one without cause.
 
-## Known pre-existing gaps (fix before first run, not silently)
+## Known gaps
 
-- **`.env` does not exist.** `main.dart` calls `dotenv.load(fileName: '.env')` before `runApp`, so the app throws on launch until it is created. `AppConfig` reads `API_BASE_URL` (falls back to the literal string `test`).
-- **`assets/images/` does not exist** but is declared in `pubspec.yaml`. Both of these are the only two `flutter analyze` warnings; a clean analyze run is otherwise the expected baseline.
+- `.env` is gitignored and must exist (`main.dart` loads it before `runApp`). It holds `API_BASE_URL`; when unset or not an http URL, `AppConfig.defaultBaseUrl` (production, `https://moneytime.findosystem.com/v1`) is used.
 - `analysis_options.yaml` declares the `custom_lint` analyzer plugin, but `custom_lint` is not in `dev_dependencies`.
+- `AppConfig.useMockData` now only gates **transactions, budgets, home, reports, categories, profile** (in-memory stubs, reset on restart). **Auth and bank messages are live** against the backend and ignore the flag.
 
 ## Architecture
 
@@ -41,9 +41,17 @@ No `build_runner` / codegen step exists for this stack — do not add one withou
 
 `main.dart` → `LocalizationWrapper` (EasyLocalization, en/ar) → `StateWrapper` (`MultiBlocProvider`, app-wide cubits — currently only `SessionCubit`) → `App` → `ScreenUtilWrapper` → `MaterialApp.router` → builder wraps `SkeletonWrapper` then `SessionListenerWrapper`.
 
-Ordering is load-bearing: `EasyLocalization.ensureInitialized()` → `dotenv.load()` → `AppConfig.init()` (builds the shared `Dio` + logging interceptors) → `runApp`. Native splash is preserved in `main` and removed by `SessionListenerWrapper` once session status resolves.
+Ordering is load-bearing: `EasyLocalization.ensureInitialized()` → `dotenv.load()` → `StorageService.init()` → `ApiSession.init()` (device id + stored JWT pair from secure storage) → `AppConfig.init()` (builds the shared `Dio` with the API interceptors) → `runApp`. Native splash is preserved in `main` and removed by `SessionListenerWrapper` once session status resolves.
 
-**App-wide cubits are registered in [lib/src/shared/wrappers/state_wrapper.dart](lib/src/shared/wrappers/state_wrapper.dart)**, not in `main.dart`. Feature-scoped cubits are provided per screen via the feature's DI factory (`BlocProvider(create: (_) => AuthDi.authCubit())`).
+**App-wide cubits are registered in [lib/src/shared/wrappers/state_wrapper.dart](lib/src/shared/wrappers/state_wrapper.dart)**, not in `main.dart`: `SessionCubit`, `TransactionsCubit`, `BudgetsCubit`, `BankSyncCubit`. Feature-scoped cubits are provided per screen via the feature's DI factory (`BlocProvider(create: (_) => AuthDi.authCubit())`). `SessionListenerWrapper` also drives `BankSyncCubit`: `load()` on sign-in, `signOut()` (disarms native SMS capture) on sign-out, `refresh()` on app resume.
+
+### Live API client — [lib/src/config/api/](lib/src/config/api/)
+
+- `ApiSession` (singleton): per-install device id (`X-Device-Id`, never regenerated on logout), access/refresh tokens in `flutter_secure_storage`, UI language mirrored into `Accept-Language` by `App`. `onSignedOut` fires when the server ends the session.
+- `ApiHeadersInterceptor` adds `Accept-Language`, `X-Device-Id`, `X-Platform`, `X-App-Version`. `ApiAuthInterceptor` adds the bearer, refreshes **once, single-flight** on `401 TOKEN_EXPIRED` and retries once; `UNAUTHENTICATED` / rejected refresh → `ApiSession.endSession()`. Public endpoints pass `Options(extra: {kSkipAuth: true})`.
+- Errors: `AppErrorHandler.toFailure` reads the server envelope `{error: {code, message, fields, request_id}}` into `ServerFailure(message, code:, status:)`; `message` is server-translated and safe to show, logic branches on `code`. Offline → `NetworkFailure('shared.no_connection')`.
+- Mutating bank-sync POSTs send an `Idempotency-Key` (uuid) with a body encoded once; batch chunks keep key + bytes across retries.
+- Backend repo and the mobile integration guide live in `~/Herd/moneytime` (`docs/mobile/bank-messages-integration.md`, `docs/api/openapi.json`).
 
 ### Feature blueprint — auth is the reference
 
@@ -74,7 +82,7 @@ Rules baked into this pattern:
 - Datasources throw; repositories are the only place that calls `runTask()`. Nothing above the repo sees exceptions.
 - Screens own controllers/form keys and stay thin; layout lives in `sections/`; reusable pieces in `widgets/`.
 - Wiring is manual and boring: one `<feature>_di.dart` with static factories. No get_it.
-- `SessionCubit` (app-wide) resolves session at startup and handles logout; after login/signup the screen calls `sessionCubit.setUser(...)` then navigates. There is no auth-state stream.
+- `SessionCubit` (app-wide) resolves session at startup (`GET /me`, falling back to the cached user when offline) and handles logout; after login/signup the screen calls `sessionCubit.setUser(...)` then navigates. It also listens to `AuthRepository.sessionEnded` (server revoked / refresh rejected) and drops to guest.
 
 ### Error handling — the `runTask` contract
 
@@ -88,7 +96,20 @@ Everything async that can fail goes through `runTask()` in [lib/src/utils/task_r
 
 All routes in [app_router.dart](lib/src/routing/app_router.dart); all paths as constants in [app_routes.dart](lib/src/routing/app_routes.dart). Never hard-code a path string. `SessionListenerWrapper` performs the global authenticated→`home` / unauthenticated→`onboarding` redirect on session status change; per-route guards belong in the router config, not in screens.
 
-First-run flow: `splash → onboarding → language → currency → enable-features → login`. `SessionListenerWrapper` runs in `MaterialApp.router`'s builder, which sits **above** go_router's `InheritedGoRouter`, so it navigates via the `appRouter` singleton, not `context.go`. Screens reached by both `push` and `go` must use `context.popOrGo(fallback)` for their back affordance — a bare `context.pop()` throws "nothing to pop" when the stack was replaced by `go`.
+First-run flow: `splash → language → onboarding → home (guest)` or `→ login`; after signup: `connect-shortcuts → (bank-link-setup in funnel mode) → all-set`. `SessionListenerWrapper` runs in `MaterialApp.router`'s builder, which sits **above** go_router's `InheritedGoRouter`, so it navigates via the `appRouter` singleton, not `context.go`. Screens reached by both `push` and `go` must use `context.popOrGo(fallback)` for their back affordance — a bare `context.pop()` throws "nothing to pop" when the stack was replaced by `go`.
+
+### Bank messages — [lib/src/features/bank_sync/](lib/src/features/bank_sync/)
+
+Live end to end. Domain entities mirror the API objects (`BankMessage` with `channel`/`transactionId`, `BankSyncSummary`, `BankMessagePage`, `ImportOverrides`, `BulkImportResult`…). The repository also owns this device's **native capture** through `BankCaptureLocalDataSource` (`MethodChannel('money_time/bank_capture')`):
+- Android: [android/app/src/main/kotlin/com/example/money_time/bankcapture/](android/app/src/main/kotlin/com/example/money_time/bankcapture/) — `BankSmsReceiver` (RECEIVE_SMS, filters linked senders, queues with a per-SMS Idempotency-Key) → `IngestWorker` (WorkManager, `POST /bank-sync/ingest` with the `mti_` token, Keystore-encrypted by `TokenCipher`); `SmsInbox` reads the last 30 days (READ_SMS) for the wizard.
+- iOS: [ios/Runner/BankCapture.swift](ios/Runner/BankCapture.swift) — token in Keychain, "Log Bank Message" App Intent for the Shortcuts automation.
+- The ingest token is returned **once** by `POST /bank-sync/link` and goes straight to native storage; Dart never persists it. `ensureCapture` issues one only when nothing is stored (fresh install), stands down when the link captures on the other platform, and when native reports `needsToken` (revoked: another phone of the same platform took over, or the password changed) it reports `CaptureOutcome.revoked` **without re-issuing** — the hub shows "capture paused" and `useThisPhone()` claims it back. Automatic re-issue would make two phones revoke each other forever.
+- **Catch-up scan (Android):** on every `ensureCapture` the repository reads the device inbox since a stored high-water mark (`bank_sync.catch_up_ms`, set when capture is armed and after the 30-day scan) and uploads anything the live receiver missed (force-stop, before first unlock after a reboot) as `channel: android_sms` through `/bank-sync/messages/batch`. Never from before the mark, so the past the user didn't ask to scan stays private.
+- `BankSyncCubit` guards overlapping work with an epoch counter: reads (`load`/`refresh`/`loadMore`/summary) drop their result when a mutation, a full load or `signOut()` happened meanwhile; mutations apply theirs unless the session ended. Screens use `BankImportFlow` for import/paste/ignore/restore/refresh and react to one-shot `BankSyncAction`s (`statusChanged` with `lastMoved`, `refreshFailed`, `captureMoved`…).
+- Native timestamps: `SmsTime.pick` prefers the service-centre time (`date_sent`, shared by receiver and scan for the server's minute-level dedupe) but falls back to the device clock when the SMSC stamps the future (the emulator's modem ignores Cairo DST; carriers can too). `X-App-Version` is read natively at request time, never stored. The two capture prefs files and the secure-storage prefs are excluded from Android backup (`res/xml/backup_rules.xml`, `data_extraction_rules.xml`).
+- Backend `Idempotent` middleware answers `409 IDEMPOTENCY_IN_PROGRESS` + `Retry-After` when a replay arrives while the first attempt is still running (lock TTL/wait in `config/money_time.php` `idempotency`); the batch uploader waits it out.
+- Imports go only through `/bank-sync/messages/{id}/import` and `/bank-sync/messages/import`, then the created transactions are mirrored into the local (still mock) ledger by `BankImportFlow`.
+- The on-device `BankSmsParser` only powers the paste sheet's live preview; the server parses what gets stored.
 
 ### Presentation-only features
 

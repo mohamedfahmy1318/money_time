@@ -11,7 +11,7 @@ class PendingMessagesBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = context.select<BankSyncCubit, int>(
-      (c) => c.state.isConnected ? c.state.pending.length : 0,
+      (c) => c.state.isConnected ? c.state.summary.pendingCount : 0,
     );
     if (count == 0) return const SizedBox.shrink();
 
@@ -32,8 +32,8 @@ class PendingMessagesBanner extends StatelessWidget {
                     gradient: AppGradients.primaryButton,
                     borderRadius: BorderRadius.circular(13.r),
                   ),
-                  child: Icon(Icons.sms_rounded,
-                      size: 19.sp, color: Colors.white),
+                  child:
+                      Icon(Icons.sms_rounded, size: 19.sp, color: Colors.white),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(

@@ -232,9 +232,8 @@ abstract final class BankSmsParser {
     }
     return cleaned
         .split(' ')
-        .map((w) => w.length <= 3
-            ? w
-            : '${w[0]}${w.substring(1).toLowerCase()}')
+        .map(
+            (w) => w.length <= 3 ? w : '${w[0]}${w.substring(1).toLowerCase()}')
         .join(' ');
   }
 
@@ -265,8 +264,18 @@ abstract final class BankSmsParser {
   static final _time = RegExp(r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)');
 
   static const _months = [
-    'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-    'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
   ];
 
   /// Egyptian alerts write day-first (`24/09`, `24/09/2026`, `21SEP`). A

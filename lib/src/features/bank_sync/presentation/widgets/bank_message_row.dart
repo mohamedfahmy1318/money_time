@@ -67,8 +67,8 @@ class BankMessageRow extends StatelessWidget {
             trailing ??
                 Text(
                   message.signedAmount(),
-textDirection: TextDirection.ltr,
-maxLines: 1,
+                  textDirection: TextDirection.ltr,
+                  maxLines: 1,
                   style: context.textTheme.titleSmall?.copyWith(
                     color: p == null
                         ? context.colors.onSurfaceVariant

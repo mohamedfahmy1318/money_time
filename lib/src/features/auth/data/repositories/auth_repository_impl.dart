@@ -11,14 +11,14 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
 
   @override
+  Stream<void> get sessionEnded => _remote.sessionEnded;
+
+  @override
   FutureEither<AppUser> login({
     required String email,
     required String password,
   }) {
-    return runTask(
-      () => _remote.login(email: email, password: password),
-      requiresNetwork: true,
-    );
+    return runTask(() => _remote.login(email: email, password: password));
   }
 
   @override
@@ -29,21 +29,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }) {
     return runTask(
       () => _remote.signUp(name: name, email: email, password: password),
-      requiresNetwork: true,
     );
   }
 
   @override
   FutureEither<void> forgotPassword({required String email}) {
-    return runTask(
-      () => _remote.forgotPassword(email: email),
-      requiresNetwork: true,
-    );
+    return runTask(() => _remote.forgotPassword(email: email));
   }
 
   @override
   FutureEither<void> logout() {
-    return runTask(() => _remote.logout(), requiresNetwork: true);
+    return runTask(() => _remote.logout());
   }
 
   @override

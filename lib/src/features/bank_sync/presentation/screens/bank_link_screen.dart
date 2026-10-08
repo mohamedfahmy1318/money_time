@@ -8,6 +8,8 @@ import 'package:mony_time/src/features/bank_sync/presentation/helpers/bank_impor
 import 'package:mony_time/src/features/bank_sync/presentation/sections/link_intro_section.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/sections/link_status_hero.dart';
 import 'package:mony_time/src/features/bank_sync/presentation/widgets/bank_row.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/widgets/note_banner.dart';
+import 'package:mony_time/src/features/bank_sync/presentation/widgets/sms_access_banner.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/profile_menu_row.dart';
 import 'package:mony_time/src/features/profile/presentation/widgets/settings_section.dart';
 import 'package:mony_time/src/features/setup/presentation/widgets/pill_toggle.dart';
@@ -29,7 +31,7 @@ class _BankLinkScreenState extends State<BankLinkScreen> with BankImportFlow {
   bool _disconnecting = false;
 
   @override
-  void onImported(int count) =>
+  void onImported(int count, int skipped) =>
       showToast(context, message: 'bank_sync.added_count'.plural(count));
 
   void _toggleBank(BankSyncState state, String bankId) {
@@ -92,12 +94,20 @@ class _BankLinkScreenState extends State<BankLinkScreen> with BankImportFlow {
     await context.read<BankSyncCubit>().disconnect();
   }
 
+  void _useThisPhone() {
+    setState(() => _awaiting = true);
+    context.read<BankSyncCubit>().useThisPhone();
+  }
+
   void _onStateChanged(BuildContext context, BankSyncState state) {
     if (!_awaiting) return;
     switch (state.action) {
       case BankSyncAction.disconnected:
         setState(() => _awaiting = _disconnecting = false);
         showToast(context, message: 'bank_sync.disconnected'.tr());
+      case BankSyncAction.captureMoved:
+        setState(() => _awaiting = false);
+        showToast(context, message: 'bank_sync.capture_moved'.tr());
       case BankSyncAction.linkUpdated:
         _awaiting = false;
       case BankSyncAction.failure:
@@ -131,9 +141,8 @@ class _BankLinkScreenState extends State<BankLinkScreen> with BankImportFlow {
                     message: state.errorMessage,
                     onRetry: () => context.read<BankSyncCubit>().load(),
                   ),
-                BankSyncStatus.ready => state.isConnected
-                    ? _connected(state)
-                    : _notConnected(),
+                BankSyncStatus.ready =>
+                  state.isConnected ? _connected(state) : _notConnected(),
               },
             ),
           );
@@ -176,81 +185,178 @@ class _BankLinkScreenState extends State<BankLinkScreen> with BankImportFlow {
   }
 
   Widget _connected(BankSyncState state) {
-    final pending = state.pending.length;
-    final lastMessageAt =
-        state.messages.isEmpty ? null : state.messages.first.receivedAt;
+    final summary = state.summary;
+    final pending = summary.pendingCount;
 
-    return ListView(
-      padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
-      children: [
-        LinkStatusHero(
-          link: state.link,
-          pendingCount: pending,
-          importedCount: state.imported.length,
-          lastMessageAt: lastMessageAt,
-          onTap: () => context.push(AppRoutes.bankInbox),
-        ),
-        SizedBox(height: 16.h),
-        AppGradientButton(
-          label: pending > 0
-              ? 'bank_sync.review_count'.plural(pending)
-              : 'bank_sync.open_inbox'.tr(),
-          onPressed: () => context.push(AppRoutes.bankInbox),
-        ),
-        SizedBox(height: 24.h),
-        SettingsSection(
-          title: 'bank_sync.section_import'.tr(),
-          rows: [
-            _ToggleRow(
-              title: 'bank_sync.auto_add_title'.tr(),
-              description: 'bank_sync.auto_add_desc'.tr(),
-              value: state.link.isAutomatic,
-              onChanged: _setAutomatic,
+    return RefreshIndicator(
+      onRefresh: refreshInbox,
+      color: context.colors.primary,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
+        children: [
+          LinkStatusHero(
+            link: state.link,
+            pendingCount: pending,
+            importedCount: summary.importedCount,
+            lastMessageAt: summary.lastMessageAt,
+            onTap: () => context.push(AppRoutes.bankInbox),
+          ),
+          if (!state.capturesHere) ...[
+            SizedBox(height: 14.h),
+            _OtherPhoneNote(
+              method: state.link.method,
+              onUseThisPhone: () => context.push(AppRoutes.bankLinkSetup),
             ),
-            ProfileMenuRow(
-              icon: Icons.content_paste_rounded,
-              label: 'bank_sync.paste_title'.tr(),
-              onTap: addPastedMessage,
+          ] else if (state.captureRevoked) ...[
+            SizedBox(height: 14.h),
+            _RevokedNote(
+              isWorking: _awaiting && state.isWorking,
+              onUseThisPhone: _useThisPhone,
             ),
-          ],
-        ),
-        SizedBox(height: 20.h),
-        SettingsSection(
-          title: 'bank_sync.section_banks'.tr(),
-          rows: [
-            for (final bank in state.banks)
-              BankRow(
-                bank: bank,
-                onTap: () => _toggleBank(state, bank.id),
-                trailing: PillToggle(
-                  value: state.link.bankIds.contains(bank.id),
-                  onChanged: (_) => _toggleBank(state, bank.id),
-                ),
-              ),
-          ],
-        ),
-        if (state.link.method == BankLinkMethod.shortcuts) ...[
-          SizedBox(height: 20.h),
+          ] else if (state.deviceMethod == BankLinkMethod.sms)
+            const SmsAccessBanner(),
+          SizedBox(height: 16.h),
+          AppGradientButton(
+            label: pending > 0
+                ? 'bank_sync.review_count'.plural(pending)
+                : 'bank_sync.open_inbox'.tr(),
+            onPressed: () => context.push(AppRoutes.bankInbox),
+          ),
+          SizedBox(height: 24.h),
           SettingsSection(
-            title: 'bank_sync.section_shortcut'.tr(),
+            title: 'bank_sync.section_import'.tr(),
             rows: [
-              ProfileMenuRow(
-                icon: Icons.bolt_rounded,
-                label: 'bank_sync.open_shortcuts'.tr(),
-                onTap: _openShortcuts,
+              _ToggleRow(
+                title: 'bank_sync.auto_add_title'.tr(),
+                description: 'bank_sync.auto_add_desc'.tr(),
+                value: state.link.isAutomatic,
+                onChanged: _setAutomatic,
               ),
               ProfileMenuRow(
-                icon: Icons.menu_book_outlined,
-                label: 'bank_sync.setup_guide'.tr(),
-                onTap: () => context.push(AppRoutes.bankLinkSetup),
+                icon: Icons.content_paste_rounded,
+                label: 'bank_sync.paste_title'.tr(),
+                onTap: addPastedMessage,
               ),
             ],
           ),
+          SizedBox(height: 20.h),
+          SettingsSection(
+            title: 'bank_sync.section_banks'.tr(),
+            rows: [
+              for (final bank in state.banks)
+                BankRow(
+                  bank: bank,
+                  onTap: () => _toggleBank(state, bank.id),
+                  trailing: PillToggle(
+                    value: state.link.bankIds.contains(bank.id),
+                    onChanged: (_) => _toggleBank(state, bank.id),
+                  ),
+                ),
+            ],
+          ),
+          if (state.capturesHere &&
+              state.link.method == BankLinkMethod.shortcuts) ...[
+            SizedBox(height: 20.h),
+            SettingsSection(
+              title: 'bank_sync.section_shortcut'.tr(),
+              rows: [
+                ProfileMenuRow(
+                  icon: Icons.bolt_rounded,
+                  label: 'bank_sync.open_shortcuts'.tr(),
+                  onTap: _openShortcuts,
+                ),
+                ProfileMenuRow(
+                  icon: Icons.menu_book_outlined,
+                  label: 'bank_sync.setup_guide'.tr(),
+                  onTap: () => context.push(AppRoutes.bankLinkSetup),
+                ),
+              ],
+            ),
+          ],
+          SizedBox(height: 24.h),
+          _DisconnectButton(
+            isLoading: _disconnecting,
+            onTap: _confirmDisconnect,
+          ),
         ],
-        SizedBox(height: 24.h),
-        _DisconnectButton(
-          isLoading: _disconnecting,
-          onTap: _confirmDisconnect,
+      ),
+    );
+  }
+}
+
+/// Capture runs on the user's phone of the other platform (one live ingest
+/// token per account): say so, and offer to move it to this phone.
+class _OtherPhoneNote extends StatelessWidget {
+  const _OtherPhoneNote({required this.method, required this.onUseThisPhone});
+
+  final BankLinkMethod? method;
+  final VoidCallback onUseThisPhone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        NoteBanner(
+          icon: Icons.phone_android_rounded,
+          title: 'bank_sync.other_phone_title'.tr(),
+          text: method == BankLinkMethod.shortcuts
+              ? 'bank_sync.other_phone_iphone'.tr()
+              : 'bank_sync.other_phone_android'.tr(),
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton(
+            onPressed: onUseThisPhone,
+            child: Text(
+              'bank_sync.use_this_phone'.tr(),
+              style: context.textTheme.labelMedium?.copyWith(
+                color: context.colors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12.5.sp,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// This phone's token was revoked — another phone of the same platform took
+/// over, or the password changed. Nothing is re-issued behind the user's
+/// back (two phones would keep cutting each other off); they claim it here.
+class _RevokedNote extends StatelessWidget {
+  const _RevokedNote({required this.isWorking, required this.onUseThisPhone});
+
+  final bool isWorking;
+  final VoidCallback onUseThisPhone;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        NoteBanner(
+          icon: Icons.pause_circle_outline_rounded,
+          tone: NoteTone.warning,
+          title: 'bank_sync.capture_revoked_title'.tr(),
+          text: 'bank_sync.capture_revoked_desc'.tr(),
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton(
+            onPressed: isWorking ? null : onUseThisPhone,
+            child: Text(
+              'bank_sync.use_this_phone'.tr(),
+              style: context.textTheme.labelMedium?.copyWith(
+                color: context.colors.primary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12.5.sp,
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -266,7 +372,11 @@ class _DisconnectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      enabled: !isLoading,
+      label: 'bank_sync.disconnect'.tr(),
+      child: GestureDetector(
       onTap: isLoading ? null : onTap,
       child: Container(
         height: 49.h,
@@ -293,6 +403,7 @@ class _DisconnectButton extends StatelessWidget {
                 ),
               ),
       ),
+    ),
     );
   }
 }

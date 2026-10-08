@@ -5,15 +5,16 @@ import 'package:mony_time/src/features/bank_sync/presentation/helpers/bank_displ
 
 /// A bank SMS drawn as a received chat bubble. Arabic messages lay out
 /// right-to-left whatever the app language; [maxLines] collapses it to a
-/// preview.
+/// preview. A `null` [body] (purged after 90 days) shows a muted note.
 class SmsBubble extends StatelessWidget {
   const SmsBubble({super.key, required this.body, this.maxLines});
 
-  final String body;
+  final String? body;
   final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
+    final text = body;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
@@ -27,18 +28,27 @@ class SmsBubble extends StatelessWidget {
           bottomEnd: Radius.circular(16.r),
         ),
       ),
-      child: Text(
-        body,
-        maxLines: maxLines,
-        overflow: maxLines == null ? null : TextOverflow.ellipsis,
-        textDirection: smsDirection(body),
-        textAlign: TextAlign.start,
-        style: context.textTheme.bodySmall?.copyWith(
-          color: context.colors.onSurface,
-          fontSize: 12.sp,
-          height: 1.45,
-        ),
-      ),
+      child: text == null
+          ? Text(
+              'bank_sync.body_expired'.tr(),
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+                fontSize: 12.sp,
+              ),
+            )
+          : Text(
+              text,
+              maxLines: maxLines,
+              overflow: maxLines == null ? null : TextOverflow.ellipsis,
+              textDirection: smsDirection(text),
+              textAlign: TextAlign.start,
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colors.onSurface,
+                fontSize: 12.sp,
+                height: 1.45,
+              ),
+            ),
     );
   }
 }

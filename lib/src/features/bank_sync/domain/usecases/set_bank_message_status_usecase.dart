@@ -11,6 +11,6 @@ class SetBankMessageStatusUseCase {
     List<String> ids,
     BankMessageStatus status,
   ) {
-    return _repository.setMessageStatus(ids, status);
+    return _repository.setStatus(ids, status);
   }
 }

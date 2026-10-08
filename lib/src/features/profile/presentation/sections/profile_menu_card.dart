@@ -78,7 +78,7 @@ class _BankLinkStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (connected, pending) = context.select<BankSyncCubit, (bool, int)>(
-      (c) => (c.state.isConnected, c.state.pending.length),
+      (c) => (c.state.isConnected, c.state.summary.pendingCount),
     );
 
     if (connected && pending > 0) {

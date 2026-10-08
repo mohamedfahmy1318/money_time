@@ -11,11 +11,9 @@ class AppSoftCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+  /// The card look on its own — for lazy lists that paint it behind a
+  /// sliver instead of wrapping every row in a card.
+  static BoxDecoration decorationOf(BuildContext context) => BoxDecoration(
         color: context.colors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: context.colors.outlineVariant),
@@ -26,7 +24,13 @@ class AppSoftCard extends StatelessWidget {
             blurRadius: 7.r,
           ),
         ],
-      ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: decorationOf(context),
       child: padding == null ? child : Padding(padding: padding!, child: child),
     );
   }

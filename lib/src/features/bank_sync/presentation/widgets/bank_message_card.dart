@@ -31,7 +31,10 @@ class BankMessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = message.parsed!;
+    // Pending messages always carry parsed values (the server files the
+    // rest as ignored); stay quiet rather than crash if one ever doesn't.
+    final p = message.parsed;
+    if (p == null) return const SizedBox.shrink();
     final locale = context.locale.toString();
     final attention = message.needsAttention;
 
@@ -96,7 +99,7 @@ class BankMessageCard extends StatelessWidget {
                         ),
                         SizedBox(height: 3.h),
                         Text(
-                          '${p.categoryEmoji} ${p.categoryLabel}',
+                          message.categoryLine(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.textTheme.labelSmall?.copyWith(
@@ -110,8 +113,8 @@ class BankMessageCard extends StatelessWidget {
                   SizedBox(width: 10.w),
                   Text(
                     message.signedAmount(),
-textDirection: TextDirection.ltr,
-maxLines: 1,
+                    textDirection: TextDirection.ltr,
+                    maxLines: 1,
                     style: context.textTheme.titleMedium?.copyWith(
                       color: p.type.isIncome
                           ? context.colors.tertiary
@@ -141,9 +144,8 @@ maxLines: 1,
                       label: attention
                           ? 'bank_sync.review'.tr()
                           : 'bank_sync.add'.tr(),
-                      icon: attention
-                          ? Icons.edit_outlined
-                          : Icons.check_rounded,
+                      icon:
+                          attention ? Icons.edit_outlined : Icons.check_rounded,
                       filled: true,
                       onTap: enabled ? (attention ? onTap : onAdd) : null,
                     ),
@@ -178,7 +180,11 @@ class CardActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final fg = filled ? Colors.white : context.colors.onSurfaceVariant;
 
-    return Opacity(
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      child: Opacity(
       opacity: onTap == null ? 0.5 : 1,
       child: GestureDetector(
         onTap: onTap,
@@ -208,6 +214,7 @@ class CardActionButton extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

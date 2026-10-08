@@ -13,8 +13,11 @@ import 'package:mony_time/src/features/bank_sync/presentation/widgets/step_progr
 import 'package:mony_time/src/features/setup/presentation/widgets/permission_row.dart';
 
 /// Guided bank-SMS connection: choose banks → hook up the platform capture
-/// (an Apple Shortcuts automation on iOS, SMS access on Android) → pick the
-/// import mode → done. Pops `true` once connected.
+/// (SMS access + an optional 30-day import on Android, a Shortcuts
+/// automation on iPhone) → pick the import mode → connect once, at the end
+/// → (Android) upload the last 30 days → done. Pops `true` once connected.
+///
+/// Refusing SMS access still connects: pasting messages keeps working.
 class BankLinkSetupScreen extends StatefulWidget {
   const BankLinkSetupScreen({super.key, this.inFunnel = false});
 
@@ -26,37 +29,76 @@ class BankLinkSetupScreen extends StatefulWidget {
   State<BankLinkSetupScreen> createState() => _BankLinkSetupScreenState();
 }
 
+enum _Phase { idle, connecting, scanning }
+
 class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
   static const _stepCount = 3;
   static const _doneStep = 3;
 
-  late final BankLinkMethod _method =
-      PlatformInfo.isIOS ? BankLinkMethod.shortcuts : BankLinkMethod.sms;
+  late final BankLinkMethod _method;
 
   int _step = 0;
   final Set<String> _bankIds = {};
   ImportMode _mode = ImportMode.review;
   bool _scanHistory = true;
 
-  /// True after this screen fired the connect — guards the shared cubit.
-  bool _submitted = false;
+  /// Android SMS permission: granted, or asked and refused.
+  bool _smsGranted = false;
+  bool _smsDenied = false;
+  bool _smsPermanentlyDenied = false;
+
+  /// Connect, then (Android) the 30-day upload. Also guards the shared
+  /// cubit's action stream.
+  _Phase _phase = _Phase.idle;
+
+  bool get _busy => _phase != _Phase.idle;
 
   @override
   void initState() {
     super.initState();
+    final cubit = context.read<BankSyncCubit>();
+    _method = cubit.state.deviceMethod;
     // Re-running setup from the hub starts from the current choices.
-    final link = context.read<BankSyncCubit>().state.link;
+    final link = cubit.state.link;
     _bankIds.addAll(link.bankIds);
     _mode = link.mode;
+    if (cubit.state.banks.isEmpty) cubit.load();
+    if (_method == BankLinkMethod.sms) _checkSmsPermission();
+  }
+
+  Future<void> _checkSmsPermission() async {
+    final result = await PermissionService.instance.checkStatus(Permission.sms);
+    if (!mounted) return;
+    final granted = result.fold((_) => false, (s) => s.isGranted);
+    if (granted) setState(() => _smsGranted = true);
+  }
+
+  /// RECEIVE_SMS (live capture) + READ_SMS (30-day import), asked here and
+  /// only here.
+  Future<void> _requestSms() async {
+    final result = await PermissionService.instance.request(Permission.sms);
+    if (!mounted) return;
+    final status = result.fold((_) => PermissionStatus.denied, (s) => s);
+    if (status.isGranted) {
+      setState(() {
+        _smsGranted = true;
+        _smsDenied = false;
+        _step++;
+      });
+      return;
+    }
+    setState(() {
+      _smsDenied = true;
+      _smsPermanentlyDenied = status.isPermanentlyDenied;
+    });
   }
 
   bool get _isFirstOrDone => _step == 0 || _step == _doneStep;
 
   void _next() {
     if (_step == _stepCount - 1) {
-      _submitted = true;
+      setState(() => _phase = _Phase.connecting);
       context.read<BankSyncCubit>().connect(
-            method: _method,
             bankIds: _bankIds.toList(),
             mode: _mode,
           );
@@ -109,17 +151,38 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
   }
 
   void _onStateChanged(BuildContext context, BankSyncState state) {
-    if (!_submitted) return;
+    if (!_busy) return;
     switch (state.action) {
       case BankSyncAction.connected:
-        _submitted = false;
-        setState(() => _step = _doneStep);
+        // The 30-day upload must follow connect: messages from banks that
+        // aren't linked yet are rejected.
+        if (_method == BankLinkMethod.sms && _smsGranted && _scanHistory) {
+          setState(() => _phase = _Phase.scanning);
+          context.read<BankSyncCubit>().scanHistory();
+        } else {
+          setState(() {
+            _phase = _Phase.idle;
+            _step = _doneStep;
+          });
+        }
+      case BankSyncAction.scanned:
+        setState(() {
+          _phase = _Phase.idle;
+          _step = _doneStep;
+        });
       case BankSyncAction.failure:
-        _submitted = false;
+        final wasScanning = _phase == _Phase.scanning;
+        setState(() {
+          _phase = _Phase.idle;
+          // Connected already — only the history upload failed.
+          if (wasScanning) _step = _doneStep;
+        });
         showToast(
           context,
-          message: state.errorMessage ?? 'shared.something_wrong'.tr(),
-          status: 'error',
+          message: wasScanning
+              ? 'bank_sync.scan_failed'.tr()
+              : state.errorMessage ?? 'shared.something_wrong'.tr(),
+          status: wasScanning ? 'warning' : 'error',
         );
       default:
         break;
@@ -132,7 +195,7 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
       listenWhen: (previous, current) => previous.action != current.action,
       listener: _onStateChanged,
       builder: (context, state) {
-        final connecting = state.isWorking && _submitted;
+        final connecting = _busy;
 
         return PopScope(
           canPop: _isFirstOrDone && !connecting,
@@ -227,9 +290,8 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
             ),
           ],
         ),
-      1 => _method == BankLinkMethod.shortcuts
-          ? _shortcutStep(state)
-          : _smsStep(),
+      1 =>
+        _method == BankLinkMethod.shortcuts ? _shortcutStep(state) : _smsStep(),
       2 => _StepScroll(
           title: 'bank_sync.mode_title'.tr(),
           subtitle: 'bank_sync.mode_subtitle'.tr(),
@@ -259,7 +321,7 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
         ),
       _ => _DoneView(
           banks: state.linkedBanks,
-          pendingCount: state.pending.length,
+          pendingCount: state.summary.pendingCount,
         ),
     };
   }
@@ -267,7 +329,8 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
   Widget _shortcutStep(BankSyncState state) {
     final senders = [
       for (final bank in state.banks)
-        if (_bankIds.contains(bank.id)) bank.senderIds.first,
+        if (_bankIds.contains(bank.id) && bank.senderIds.isNotEmpty)
+          bank.senderIds.first,
     ];
 
     return _StepScroll(
@@ -362,10 +425,21 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
             emoji: '🗓️',
             title: 'bank_sync.scan_history_title'.tr(),
             description: 'bank_sync.scan_history_desc'.tr(),
-            value: _scanHistory,
-            onChanged: (v) => setState(() => _scanHistory = v),
+            value: _scanHistory && !_smsDenied,
+            onChanged: (v) {
+              if (!_smsDenied) setState(() => _scanHistory = v);
+            },
           ),
         ),
+        if (_smsDenied) ...[
+          SizedBox(height: 12.h),
+          NoteBanner(
+            icon: Icons.info_outline_rounded,
+            tone: NoteTone.warning,
+            title: 'bank_sync.sms_denied_title'.tr(),
+            text: 'bank_sync.sms_denied_desc'.tr(),
+          ),
+        ],
       ],
     );
   }
@@ -378,23 +452,81 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
           onPressed: _bankIds.isEmpty ? null : _next,
         );
       case 1:
-        // Android: the runtime SMS permission request lands here once the
-        // native reader exists; the UI phase treats it as granted.
-        return AppGradientButton(
-          label: _method == BankLinkMethod.shortcuts
-              ? 'bank_sync.shortcut_done'.tr()
-              : 'bank_sync.allow_sms'.tr(),
-          onPressed: _next,
+        if (_method == BankLinkMethod.shortcuts) {
+          return AppGradientButton(
+            label: 'bank_sync.shortcut_done'.tr(),
+            onPressed: _next,
+          );
+        }
+        if (_smsGranted) {
+          return AppGradientButton(
+            label: 'shared.continue_action'.tr(),
+            onPressed: _next,
+          );
+        }
+        if (!_smsDenied) {
+          return AppGradientButton(
+            label: 'bank_sync.allow_sms'.tr(),
+            onPressed: _requestSms,
+          );
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppGradientButton(
+              label: 'bank_sync.continue_without_sms'.tr(),
+              onPressed: _next,
+            ),
+            SizedBox(height: 4.h),
+            TextButton(
+              onPressed: _smsPermanentlyDenied
+                  ? () => PermissionService.instance.openSettings()
+                  : _requestSms,
+              child: Text(
+                _smsPermanentlyDenied
+                    ? 'bank_sync.open_settings'.tr()
+                    : 'bank_sync.try_again'.tr(),
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: context.colors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.5.sp,
+                ),
+              ),
+            ),
+          ],
         );
       case 2:
-        return AppGradientButton(
-          label: 'bank_sync.finish'.tr(),
-          isLoading: connecting,
-          onPressed: _next,
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppGradientButton(
+              label: 'bank_sync.finish'.tr(),
+              isLoading: connecting,
+              onPressed: _next,
+            ),
+            AnimatedSize(
+              duration: AppDurations.fast,
+              child: _phase == _Phase.idle
+                  ? const SizedBox(width: double.infinity)
+                  : Padding(
+                      padding: EdgeInsets.only(top: 10.h),
+                      child: Text(
+                        _phase == _Phase.scanning
+                            ? 'bank_sync.scanning'.tr()
+                            : 'bank_sync.connecting'.tr(),
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.labelSmall?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                          fontSize: 11.5.sp,
+                        ),
+                      ),
+                    ),
+            ),
+          ],
         );
     }
 
-    final pending = state.pending.length;
+    final pending = state.summary.pendingCount;
     if (widget.inFunnel || pending == 0) {
       return AppGradientButton(
         label: widget.inFunnel
@@ -412,7 +544,7 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
         ),
         SizedBox(height: 4.h),
         TextButton(
-          onPressed: () => context.pop(true),
+          onPressed: () => context.popOrGo(AppRoutes.bankLink),
           child: Text(
             'bank_sync.later'.tr(),
             style: context.textTheme.labelMedium?.copyWith(
@@ -583,8 +715,7 @@ class _ScopeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        allowed ? context.appColors.success : context.colors.error;
+    final color = allowed ? context.appColors.success : context.colors.error;
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),
@@ -645,7 +776,8 @@ class _DoneView extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(Icons.check_rounded, size: 40.sp, color: Colors.white),
+              child:
+                  Icon(Icons.check_rounded, size: 40.sp, color: Colors.white),
             )
                 .animate()
                 .scale(

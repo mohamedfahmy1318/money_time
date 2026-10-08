@@ -5,6 +5,10 @@ import 'package:mony_time/src/features/auth/domain/entities/user.dart';
 ///
 /// Presentation never talks to this directly — it goes through the use cases.
 abstract class AuthRepository {
+  /// Fires when the server ends the session (refresh rejected, token
+  /// revoked) so the app can drop to guest mode.
+  Stream<void> get sessionEnded;
+
   /// Sign in with email and password.
   FutureEither<AppUser> login({
     required String email,

@@ -60,6 +60,8 @@ dependencies:
   file_picker: ^10.3.10
 
   # Utilities
+  uuid: ^4.5.1 # device id + Idempotency-Key per user intent
+  package_info_plus: ^9.0.0 # X-App-Version header
   path_provider: ^2.1.4
   url_launcher: ^6.3.1
   share_plus: ^10.1.4

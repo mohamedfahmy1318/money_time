@@ -6,7 +6,8 @@
     "cancel": "Cancel",
     "something_wrong": "Something went wrong",
     "today": "Today",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "no_connection": "No internet connection. Check your connection and try again."
   },
   "splash": {
     "tagline": "TIME YOUR MONEY"
@@ -335,6 +336,7 @@
     "stat_added": "Added",
     "stat_banks": "Banks",
     "review_count": {
+      "zero": "Nothing to review",
       "one": "Review 1 message",
       "other": "Review {} messages"
     },
@@ -355,6 +357,7 @@
     "disconnect_message": "New bank messages won't be read anymore. Messages you already have stay in your inbox.",
     "disconnected": "Bank messages disconnected",
     "added_count": {
+      "zero": "No transactions added",
       "one": "1 transaction added",
       "other": "{} transactions added"
     },
@@ -366,15 +369,15 @@
     "banks_subtitle": "We'll only read SMS from the senders you pick.",
     "banks_note": "You can add or remove banks anytime.",
     "shortcut_title": "Add the Shortcut automation",
-    "shortcut_subtitle": "iPhone doesn't let apps read SMS, so a Shortcuts automation forwards your bank alerts. It takes about a minute.",
-    "shortcut_1_title": "Open Shortcuts → Automation",
-    "shortcut_1_desc": "Tap ＋ and choose “Message”.",
-    "shortcut_2_title": "Set the sender to your bank",
-    "shortcut_2_desc": "Add each sender below (tap to copy), then choose “Run Immediately”.",
-    "shortcut_3_title": "Add the Money Time action",
-    "shortcut_3_desc": "Search “Log Bank Message” and pass it the Message.",
-    "shortcut_4_title": "Done",
-    "shortcut_4_desc": "New alerts from these banks will land in your inbox.",
+    "shortcut_subtitle": "iPhone doesn't let apps read SMS, so a Shortcuts automation sends each bank alert to Money Time. Set it up once per bank — about a minute.",
+    "shortcut_1_title": "Open Shortcuts → Automation → ＋",
+    "shortcut_1_desc": "Choose “Message”.",
+    "shortcut_2_title": "Sender: your bank",
+    "shortcut_2_desc": "Tap “Sender”, paste one of these (tap to copy), and pick “Run Immediately”.",
+    "shortcut_3_title": "Add “Log Bank Message”",
+    "shortcut_3_desc": "New Blank Automation → Add Action → search Money Time → “Log Bank Message”. Set Bank to the same sender and Message to “Shortcut Input”.",
+    "shortcut_4_title": "Done — repeat for each bank",
+    "shortcut_4_desc": "From now on every alert from these banks lands in your inbox in about a second.",
     "copied": "“{value}” copied",
     "shortcut_done": "I've added the automation",
     "sms_title": "Allow SMS access",
@@ -399,6 +402,7 @@
     "finish": "Finish setup",
     "done_title": "Bank messages connected",
     "done_found": {
+      "zero": "We found no recent messages.",
       "one": "We found 1 recent message ready to review.",
       "other": "We found {} recent messages ready to review."
     },
@@ -409,10 +413,12 @@
     "tab_added": "Added",
     "tab_ignored": "Ignored",
     "add_all": {
+      "zero": "Add all",
       "one": "Add 1 transaction",
       "other": "Add all {}"
     },
     "add_all_clear": {
+      "zero": "No clear messages",
       "one": "Add 1 clear message",
       "other": "Add {} clear messages"
     },
@@ -457,6 +463,33 @@
     "paste_hint": "e.g. Your card ending 4821 was charged EGP 245.50 at …",
     "paste_from_clipboard": "Paste",
     "add_to_inbox": "Add to inbox",
-    "check_both_title": "Please double-check this one"
+    "check_both_title": "Please double-check this one",
+    "added_skipped": "{added} added · {skipped} skipped (changed elsewhere)",
+    "already_have": "You already have this message in your inbox",
+    "body_expired": "Message text removed after 90 days",
+    "category_auto": "Automatic",
+    "connecting": "Connecting your banks…",
+    "continue_without_sms": "Continue without SMS access",
+    "load_more": "Load more",
+    "open_settings": "Open settings",
+    "other_phone_title": "Capturing on your other phone",
+    "other_phone_iphone": "New bank messages are logged by the Shortcuts automation on your iPhone. You can still review them here.",
+    "other_phone_android": "New bank messages are read on your Android phone. You can still review them here.",
+    "use_this_phone": "Capture on this phone instead",
+    "pick_category": "Choose a category",
+    "scan_failed": "Connected — but recent messages couldn't be imported. New ones will still arrive.",
+    "scanning": "Importing your last 30 days of bank messages…",
+    "sms_denied_title": "SMS access is off",
+    "sms_denied_desc": "Money Time can't read new bank messages without it. You can still connect and paste messages yourself, or allow access later from settings.",
+    "try_again": "Try again",
+    "sms_off_title": "SMS access is off on this phone",
+    "sms_off_desc": "New bank messages won't be captured here until you allow it. Pasting still works.",
+    "restored_toast": "Moved back to review",
+    "changed_elsewhere": "This message was already changed elsewhere",
+    "capture_revoked_title": "Capture paused on this phone",
+    "capture_revoked_desc": "Another phone took over bank messages, or your password changed. New alerts are not read here until you switch it back.",
+    "capture_moved": "This phone now captures your bank messages",
+    "intro_example_merchant": "Carrefour Maadi",
+    "intro_example_meta": "Groceries · CIB •• 4821"
   }
 }

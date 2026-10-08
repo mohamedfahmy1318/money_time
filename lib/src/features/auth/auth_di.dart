@@ -26,5 +26,6 @@ abstract final class AuthDi {
   static SessionCubit sessionCubit() => SessionCubit(
         getCurrentUser: GetCurrentUserUseCase(_repository),
         logout: LogoutUseCase(_repository),
+        sessionEnded: _repository.sessionEnded,
       );
 }

@@ -146,7 +146,7 @@ class _ExampleCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Carrefour Maadi',
+                        'bank_sync.intro_example_merchant'.tr(),
                         style: context.textTheme.titleSmall?.copyWith(
                           color: context.colors.onSurface,
                           fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class _ExampleCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Groceries · CIB •• 4821',
+                        'bank_sync.intro_example_meta'.tr(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: context.textTheme.labelSmall?.copyWith(
@@ -167,8 +167,8 @@ class _ExampleCard extends StatelessWidget {
                 ),
                 Text(
                   signedMoneyWithSymbol(245.5, isIncome: false),
-textDirection: TextDirection.ltr,
-maxLines: 1,
+                  textDirection: TextDirection.ltr,
+                  maxLines: 1,
                   style: context.textTheme.titleSmall?.copyWith(
                     color: context.colors.error,
                     fontWeight: FontWeight.bold,

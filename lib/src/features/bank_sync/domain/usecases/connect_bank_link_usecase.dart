@@ -8,10 +8,9 @@ class ConnectBankLinkUseCase {
   final BankSyncRepository _repository;
 
   FutureEither<BankLink> call({
-    required BankLinkMethod method,
     required List<String> bankIds,
     required ImportMode mode,
   }) {
-    return _repository.connect(method: method, bankIds: bankIds, mode: mode);
+    return _repository.connect(bankIds: bankIds, mode: mode);
   }
 }

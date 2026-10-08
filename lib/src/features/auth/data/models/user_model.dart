@@ -20,7 +20,7 @@ class UserModel extends AppUser {
       id: data['id']?.toString() ?? '',
       email: data['email'] as String? ?? '',
       name: data['name'] as String?,
-      photoUrl: data['photoUrl'] as String?,
+      photoUrl: (data['photo_url'] ?? data['photoUrl']) as String?,
     );
   }
 
@@ -28,6 +28,6 @@ class UserModel extends AppUser {
         'id': id,
         'email': email,
         'name': name,
-        'photoUrl': photoUrl,
+        'photo_url': photoUrl,
       };
 }

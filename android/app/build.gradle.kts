@@ -42,3 +42,8 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Background delivery of captured bank SMS (bankcapture/IngestWorker.kt).
+    implementation("androidx.work:work-runtime-ktx:2.10.2")
+}
