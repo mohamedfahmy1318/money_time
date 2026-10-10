@@ -90,7 +90,7 @@ Everything async that can fail goes through `runTask()` in [lib/src/utils/task_r
 
 ### Services
 
-[lib/src/services/](lib/src/services/) holds cross-cutting device/platform services (storage, location, media, permissions…), singletons via `ClassName.instance`, exported from [services.dart](lib/src/services/services.dart). **Feature API calls do NOT go here** — they live in the feature's `data/datasources/`. Never pass `BuildContext` into a service — use `rootContext` from [global_navigator.dart](lib/src/routing/global_navigator.dart) (nullable) or `showGlobalToast()`.
+[lib/src/services/](lib/src/services/) holds cross-cutting device/platform services (storage, media, permissions…), singletons via `ClassName.instance`, exported from [services.dart](lib/src/services/services.dart). **Feature API calls do NOT go here** — they live in the feature's `data/datasources/`. Never pass `BuildContext` into a service — use `rootContext` from [global_navigator.dart](lib/src/routing/global_navigator.dart) (nullable) or `showGlobalToast()`.
 
 ### Routing
 

@@ -20,7 +20,6 @@ export 'package:path_provider/path_provider.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:share_plus/share_plus.dart';
 export 'package:permission_handler/permission_handler.dart';
-export 'package:geolocator/geolocator.dart' hide ServiceStatus;
 export 'package:device_info_plus/device_info_plus.dart';
 export 'package:app_version_update/app_version_update.dart';
 

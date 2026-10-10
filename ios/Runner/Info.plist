@@ -59,6 +59,17 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Purpose strings: image_picker / file_picker reach the photo library and
+	     camera. The app only asks when the user chooses a profile photo. -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Money Time only asks for your photos if you choose a profile picture. يطلب Money Time صورك فقط إذا اخترت صورة للملف الشخصي.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Money Time only uses the camera if you choose to take a profile picture. يستخدم Money Time الكاميرا فقط إذا اخترت التقاط صورة للملف الشخصي.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Money Time does not record audio; the camera component requests this when recording video, which the app never does. لا يسجّل Money Time الصوت؛ مكوّن الكاميرا يطلب ذلك عند تصوير فيديو، وهو ما لا يفعله التطبيق.</string>
+	<!-- HTTPS only: no export-compliance questionnaire on every upload. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -48,6 +48,12 @@ dart run flutter_native_splash:create --path=flutter_native_splash.yaml
 
 ## 3. 🔐 App Permissions (Android & iOS)
 
+> **Current state (2026-10-08):** `geolocator` was removed (no feature used it) and `ios/Podfile` compiles only the
+> `permission_handler` modules the app can ask for (camera, photos, notifications). `Info.plist` carries purpose strings for
+> the photo library, camera and microphone (image_picker / file_picker reach them) and `ITSAppUsesNonExemptEncryption=false`.
+> Add a location key only if a feature starts using location again.
+
+
 Based on your chosen flags (e.g. Image Picker , Geolocator , File Picker), you must configure Native permissions before testing these features.
 
 ### Android Setup
