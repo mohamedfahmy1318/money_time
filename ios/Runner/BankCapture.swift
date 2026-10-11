@@ -54,6 +54,37 @@ enum BankCaptureStore {
     set { defaults.set(newValue, forKey: needsTokenKey) }
   }
 
+  /// What the intent did the last time Shortcuts ran it — the hub shows it,
+  /// so a user (or a developer) can tell "the automation never fired" from
+  /// "it fired and was ignored because the sender was +2010…".
+  struct LastRun: Codable {
+    var at: Date
+    /// `delivered` | `queued` | `skipped` | `empty` | `error`
+    var outcome: String
+    var sender: String?
+    var detail: String?
+  }
+
+  private static let lastRunKey = "money_time.bank_capture.last_run"
+
+  static var lastRun: LastRun? {
+    get {
+      guard let data = defaults.data(forKey: lastRunKey) else { return nil }
+      return try? JSONDecoder().decode(LastRun.self, from: data)
+    }
+    set {
+      if let newValue, let data = try? JSONEncoder().encode(newValue) {
+        defaults.set(data, forKey: lastRunKey)
+      } else {
+        defaults.removeObject(forKey: lastRunKey)
+      }
+    }
+  }
+
+  static func record(_ outcome: String, sender: String? = nil, detail: String? = nil) {
+    lastRun = LastRun(at: Date(), outcome: outcome, sender: sender, detail: detail)
+  }
+
   /// Where the token lives: the Keychain on devices, memory in unit tests.
   static var tokenStore: BankTokenStore = KeychainTokenStore(service: service, account: tokenAccount)
 
@@ -68,6 +99,7 @@ enum BankCaptureStore {
     tokenStore.delete()
     config = nil
     needsToken = false
+    lastRun = nil
     BankCaptureQueue.shared.clear()
   }
 
@@ -263,11 +295,20 @@ enum BankCaptureChannel {
         Task { await BankIngestClient.flush() }
         result(nil)
       case "status":
-        result([
+        var status: [String: Any] = [
           "configured": BankCaptureStore.token != nil && BankCaptureStore.config != nil,
           "queued": BankCaptureQueue.shared.count,
           "needsToken": BankCaptureStore.needsToken,
-        ])
+        ]
+        if let run = BankCaptureStore.lastRun {
+          status["lastRun"] = [
+            "atMs": Int(run.at.timeIntervalSince1970 * 1000),
+            "outcome": run.outcome,
+            "sender": run.sender as Any,
+            "detail": run.detail as Any,
+          ]
+        }
+        result(status)
       case "readInbox":
         result([])
       default:
@@ -341,9 +382,12 @@ enum BankIngestClient {
     return URLSession(configuration: config)
   }()
 
+  enum Delivery: Equatable { case delivered, queued }
+
   /// Delivers [item] now, or queues it for later; throws only what the user
   /// should see in the Shortcuts banner.
-  static func deliver(_ item: QueuedBankMessage) async throws {
+  @discardableResult
+  static func deliver(_ item: QueuedBankMessage) async throws -> Delivery {
     guard let config = BankCaptureStore.config, let token = BankCaptureStore.token
     else { throw BankIngestError.notConnected }
     if BankCaptureStore.needsToken {
@@ -357,6 +401,7 @@ enum BankIngestClient {
       BankCaptureChannel.notifyCaptured()
       // Leftovers from an earlier outage ride along.
       if BankCaptureQueue.shared.count > 0 { await flush() }
+      return .delivered
     case .dropped(let message):
       BankCaptureQueue.shared.remove(key: item.key)
       throw BankIngestError.rejected(message)
@@ -371,6 +416,7 @@ enum BankIngestClient {
     case .retryLater:
       // Not lost: the next intent run or app open sends it.
       BankCaptureQueue.shared.add(item)
+      return .queued
     }
   }
 
@@ -517,6 +563,10 @@ struct LogBankMessageIntent: AppIntent {
     "Sends a bank SMS to Money Time. In a Message automation: Message = Shortcut Input, Sender = Shortcut Input › Sender (or pick the Bank). Only messages from your linked banks are sent.")
   static var openAppWhenRun = false
 
+  // Tried `inputConnectionBehavior: .connectToPreviousIntentResult` (iOS 17)
+  // to pre-fill this from the automation's trigger input: Shortcuts does
+  // not connect a Message trigger to a String parameter, so the user binds
+  // it by hand and the intent stays available on iOS 16.
   @Parameter(title: "Message", inputOptions: String.IntentInputOptions(multiline: true))
   var message: String
 
@@ -534,24 +584,43 @@ struct LogBankMessageIntent: AppIntent {
   }
 
   func perform() async throws -> some IntentResult {
-    let language = BankCaptureStore.config?.language ?? "ar"
+    let arabic = (BankCaptureStore.config?.language ?? "ar") == "ar"
+    let language = arabic ? "ar" : "en"
     switch BankMessageRouting.resolve(sender: sender, bank: bank, linked: BankCaptureStore.config?.senders ?? []) {
     case .skip:
+      // With a catch-all automation most skips are friends' texts: keep
+      // alphanumeric ids (a bank we don't know yet) for the hub, never a
+      // phone number.
+      let name = sender?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+      let alphanumeric = name.rangeOfCharacter(from: .letters) != nil
+      BankCaptureStore.record("skipped", sender: alphanumeric ? name : nil)
       return .result()
     case .unconfigured:
-      throw LogBankMessageFailure(
-        message: language == "ar"
-          ? "اختر البنك أو مرّر المُرسِل من مُدخَل الاختصار."
-          : "Pick the Bank or pass the Sender from Shortcut Input.")
+      let detail = arabic
+        ? "اختر البنك أو مرّر المُرسِل من مُدخَل الاختصار."
+        : "Pick the Bank or pass the Sender from Shortcut Input."
+      BankCaptureStore.record("error", detail: detail)
+      throw LogBankMessageFailure(message: detail)
     case .send(let resolved):
       let body = BankMessageRouting.clipped(message)
-      guard !body.isEmpty else { return .result() }
+      guard !body.isEmpty else {
+        // The automation ran but nothing was bound to Message: say so
+        // instead of succeeding quietly with nothing to show for it.
+        let detail = arabic
+          ? "حقل «الرسالة» فارغ — اربطه بمُدخَل الاختصار."
+          : "The Message field is empty — bind it to Shortcut Input."
+        BankCaptureStore.record("empty", sender: resolved, detail: detail)
+        throw LogBankMessageFailure(message: detail)
+      }
       let item = QueuedBankMessage(key: UUID().uuidString, sender: resolved, body: body, receivedAt: Date())
       do {
-        try await BankIngestClient.deliver(item)
+        let delivery = try await BankIngestClient.deliver(item)
+        BankCaptureStore.record(delivery == .delivered ? "delivered" : "queued", sender: resolved)
         return .result()
       } catch let error as BankIngestError {
-        throw LogBankMessageFailure(message: error.message(language: language))
+        let detail = error.message(language: language)
+        BankCaptureStore.record("error", sender: resolved, detail: detail)
+        throw LogBankMessageFailure(message: detail)
       }
     }
   }

@@ -62,6 +62,7 @@ class BankSyncState extends Equatable {
     this.deviceMethod = BankLinkMethod.sms,
     this.isScanning = false,
     this.captureRevoked = false,
+    this.captureLastRun,
     this.action = BankSyncAction.idle,
     this.lastImport,
     this.lastSubmitted,
@@ -96,6 +97,9 @@ class BankSyncState extends Equatable {
   /// platform took over, or the password changed): capture is paused here
   /// until the user claims it back with [BankSyncCubit.useThisPhone].
   final bool captureRevoked;
+
+  /// iPhone: what the Shortcuts automation did last (null = never ran).
+  final CaptureRun? captureLastRun;
 
   final BankSyncAction action;
 
@@ -159,6 +163,7 @@ class BankSyncState extends Equatable {
     Map<TransactionType, List<BankCategory>>? categories,
     bool? isScanning,
     bool? captureRevoked,
+    CaptureRun? captureLastRun,
     BankSyncAction? action,
     BulkImportResult? lastImport,
     SubmittedBankMessage? lastSubmitted,
@@ -180,6 +185,7 @@ class BankSyncState extends Equatable {
       deviceMethod: deviceMethod,
       isScanning: isScanning ?? this.isScanning,
       captureRevoked: captureRevoked ?? this.captureRevoked,
+      captureLastRun: captureLastRun ?? this.captureLastRun,
       action: action ?? this.action,
       lastImport: lastImport ?? this.lastImport,
       lastSubmitted: lastSubmitted ?? this.lastSubmitted,
@@ -204,6 +210,7 @@ class BankSyncState extends Equatable {
         deviceMethod,
         isScanning,
         captureRevoked,
+        captureLastRun,
         action,
         lastImport,
         lastSubmitted,
@@ -786,8 +793,12 @@ class BankSyncCubit extends Cubit<BankSyncState> {
         (failure) => AppLogger.warning('Bank capture not armed: $failure'),
         (report) {
           final revoked = report.outcome == CaptureOutcome.revoked;
-          if (revoked != state.captureRevoked) {
-            emit(state.copyWith(captureRevoked: revoked));
+          if (revoked != state.captureRevoked ||
+              report.lastRun != state.captureLastRun) {
+            emit(state.copyWith(
+              captureRevoked: revoked,
+              captureLastRun: report.lastRun,
+            ));
           }
           if (report.caughtUp > 0) refresh();
         },

@@ -141,15 +141,6 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
     );
   }
 
-  Future<void> _copySender(String sender) async {
-    await Clipboard.setData(ClipboardData(text: sender));
-    if (!mounted) return;
-    showToast(
-      context,
-      message: 'bank_sync.copied'.tr(namedArgs: {'value': sender}),
-    );
-  }
-
   void _onStateChanged(BuildContext context, BankSyncState state) {
     if (!_busy) return;
     switch (state.action) {
@@ -327,10 +318,10 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
   }
 
   /// Shortcuts can't filter on the alphanumeric sender ids banks use (only
-  /// on phone numbers), so the automation matches on a word every bank
-  /// alert carries; the App Intent then keeps only the linked banks.
-  static const _shortcutKeywords = ['جنيه', 'EGP', 'جم', 'ج.م'];
-
+  /// on phone numbers), so the automation catches every message (a single
+  /// space in "Message Contains" — any currency, any wording) and the App
+  /// Intent keeps only the linked banks. Message and Sender are bound by
+  /// hand to Shortcut Input — Shortcuts offers no way to pre-wire either.
   Widget _shortcutStep(BankSyncState state) {
     return _StepScroll(
       title: 'bank_sync.shortcut_title'.tr(),
@@ -349,27 +340,11 @@ class _BankLinkSetupScreenState extends State<BankLinkSetupScreen> {
                 number: 2,
                 title: 'bank_sync.shortcut_2_title'.tr(),
                 description: 'bank_sync.shortcut_2_desc'.tr(),
-                child: Wrap(
-                  spacing: 6.w,
-                  runSpacing: 6.h,
-                  children: [
-                    for (final keyword in _shortcutKeywords)
-                      _CopyChip(
-                        label: keyword,
-                        onTap: () => _copySender(keyword),
-                      ),
-                  ],
-                ),
               ),
               InstructionStep(
                 number: 3,
                 title: 'bank_sync.shortcut_3_title'.tr(),
                 description: 'bank_sync.shortcut_3_desc'.tr(),
-              ),
-              InstructionStep(
-                number: 4,
-                title: 'bank_sync.shortcut_4_title'.tr(),
-                description: 'bank_sync.shortcut_4_desc'.tr(),
                 isLast: true,
               ),
             ],
@@ -637,48 +612,6 @@ class _StepScroll extends StatelessWidget {
           SizedBox(height: 18.h),
           ...children,
         ],
-      ),
-    );
-  }
-}
-
-/// Tappable sender ID that copies itself (for the Shortcut's sender filter).
-class _CopyChip extends StatelessWidget {
-  const _CopyChip({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-        decoration: BoxDecoration(
-          color: context.colors.surface,
-          borderRadius: AppBorders.full,
-          border: Border.all(color: context.colors.outlineVariant),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: context.textTheme.labelMedium?.copyWith(
-                color: context.colors.onSurface,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.sp,
-              ),
-            ),
-            SizedBox(width: 6.w),
-            Icon(
-              Icons.copy_rounded,
-              size: 13.sp,
-              color: context.colors.onSurfaceVariant,
-            ),
-          ],
-        ),
       ),
     );
   }

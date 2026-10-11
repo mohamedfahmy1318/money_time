@@ -68,6 +68,37 @@ enum CaptureOutcome {
   revoked,
 }
 
+/// What the iPhone Shortcuts automation did the last time it ran the
+/// "Log Bank Message" intent — shown in the hub so "it never fired" and
+/// "it fired but ignored sender +2010…" look different.
+enum CaptureRunOutcome { delivered, queued, skipped, empty, error }
+
+class CaptureRun extends Equatable {
+  const CaptureRun({
+    required this.at,
+    required this.outcome,
+    this.sender,
+    this.detail,
+  });
+
+  final DateTime at;
+  final CaptureRunOutcome outcome;
+
+  /// The sender the automation passed (or the bank it was set to).
+  final String? sender;
+
+  /// The user-facing error text, for [CaptureRunOutcome.error] / `empty`.
+  final String? detail;
+
+  @override
+  List<Object?> get props => [at, outcome, sender, detail];
+}
+
 /// [outcome] plus how many SMS the catch-up scan just delivered (messages
-/// that arrived while the receiver was dead: force-stop, before first unlock).
-typedef CaptureReport = ({CaptureOutcome outcome, int caughtUp});
+/// that arrived while the receiver was dead: force-stop, before first unlock)
+/// and, on iPhone, the automation's last run.
+typedef CaptureReport = ({
+  CaptureOutcome outcome,
+  int caughtUp,
+  CaptureRun? lastRun,
+});

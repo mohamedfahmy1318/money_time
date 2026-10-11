@@ -131,7 +131,7 @@ void main() {
   });
 
   test('a revoked token is reported, not silently re-issued', () async {
-    repo.captureReport = (outcome: CaptureOutcome.revoked, caughtUp: 0);
+    repo.captureReport = (outcome: CaptureOutcome.revoked, caughtUp: 0, lastRun: null);
     await cubit.load();
     await settle();
     expect(cubit.state.captureRevoked, isTrue);
@@ -144,10 +144,10 @@ void main() {
   });
 
   test('a catch-up that delivered SMS reloads the inbox', () async {
-    repo.captureReport = (outcome: CaptureOutcome.armed, caughtUp: 2);
+    repo.captureReport = (outcome: CaptureOutcome.armed, caughtUp: 2, lastRun: null);
     await cubit.load();
     await settle();
-    repo.captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0);
+    repo.captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0, lastRun: null);
     await settle();
     expect(repo.calls.where((c) => c == 'getSummary').length, greaterThan(1));
   });

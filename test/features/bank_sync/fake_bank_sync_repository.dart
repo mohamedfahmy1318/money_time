@@ -227,7 +227,7 @@ class FakeBankSyncRepository implements BankSyncRepository {
       _run('disconnect', () => link = BankLink.disconnected);
 
   /// What the next `ensureCapture` reports.
-  CaptureReport captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0);
+  CaptureReport captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0, lastRun: null);
 
   @override
   FutureEither<CaptureReport> ensureCapture(BankLink link) =>
@@ -235,7 +235,7 @@ class FakeBankSyncRepository implements BankSyncRepository {
 
   @override
   FutureEither<void> reissueCapture() => _run('reissueCapture', () {
-        captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0);
+        captureReport = (outcome: CaptureOutcome.armed, caughtUp: 0, lastRun: null);
       });
 
   @override

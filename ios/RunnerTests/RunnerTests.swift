@@ -234,6 +234,50 @@ final class BankCaptureTests: XCTestCase {
     XCTAssertEqual(queue.count, 0, "a request the server will never take is not kept")
   }
 
+  @available(iOS 16.0, *)
+  func testIntentRecordsEveryOutcomeForTheHub() async throws {
+    var intent = LogBankMessageIntent()
+    intent.message = "لقد استلمت 1.00 جنيه"
+    intent.sender = "+201001234567"
+    _ = try await intent.perform()
+    XCTAssertEqual(BankCaptureStore.lastRun?.outcome, "skipped")
+    XCTAssertNil(BankCaptureStore.lastRun?.sender, "a phone number never reaches the hub")
+    XCTAssertTrue(StubURLProtocol.requests.isEmpty, "a friend's text never leaves the phone")
+
+    intent = LogBankMessageIntent()
+    intent.message = "تم خصم 10.00 جنيه"
+    intent.sender = "SomeBank"
+    _ = try await intent.perform()
+    XCTAssertEqual(BankCaptureStore.lastRun?.outcome, "skipped")
+    XCTAssertEqual(BankCaptureStore.lastRun?.sender, "SomeBank", "an unknown alphanumeric id is what the hub asks the user to report")
+    XCTAssertTrue(StubURLProtocol.requests.isEmpty)
+
+    intent = LogBankMessageIntent()
+    intent.message = "   "
+    intent.sender = "BanK-AlAhly"
+    do {
+      _ = try await intent.perform()
+      XCTFail("an unbound Message field must not pass silently")
+    } catch {}
+    XCTAssertEqual(BankCaptureStore.lastRun?.outcome, "empty")
+
+    StubURLProtocol.replies = [.init(status: 202)]
+    intent = LogBankMessageIntent()
+    intent.message = "تم خصم مبلغ 64.50 جنيه"
+    intent.sender = "BanK-AlAhly"
+    _ = try await intent.perform()
+    XCTAssertEqual(BankCaptureStore.lastRun?.outcome, "delivered")
+    XCTAssertEqual(BankCaptureStore.lastRun?.sender, "BanK-AlAhly")
+
+    StubURLProtocol.replies = [.init(status: 0, error: .notConnectedToInternet)]
+    intent = LogBankMessageIntent()
+    intent.message = "تم خصم مبلغ 10.00 جنيه"
+    intent.bank = "CIB"
+    _ = try await intent.perform()
+    XCTAssertEqual(BankCaptureStore.lastRun?.outcome, "queued")
+    XCTAssertEqual(BankCaptureStore.lastRun?.sender, "CIB")
+  }
+
   func testFlushStopsAtTheFirstOutageAndKeepsTheRest() async {
     let first = message(); let second = message()
     queue.add(first); queue.add(second)

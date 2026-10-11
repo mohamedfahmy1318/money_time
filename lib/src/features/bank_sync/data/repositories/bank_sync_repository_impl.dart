@@ -116,7 +116,7 @@ class BankSyncRepositoryImpl implements BankSyncRepository {
       // would cut that phone off — so this device just stands down.
       if (!link.isConnected || link.method != _deviceMethod) {
         await _standDown();
-        return (outcome: CaptureOutcome.standingDown, caughtUp: 0);
+        return (outcome: CaptureOutcome.standingDown, caughtUp: 0, lastRun: null);
       }
 
       final senders = await _sendersFor(link.bankIds);
@@ -127,13 +127,18 @@ class BankSyncRepositoryImpl implements BankSyncRepository {
         // make two phones revoke each other forever; the user claims it
         // back from the hub instead.
         if (status.needsToken) {
-          return (outcome: CaptureOutcome.revoked, caughtUp: 0);
+          return (
+            outcome: CaptureOutcome.revoked,
+            caughtUp: 0,
+            lastRun: status.lastRun,
+          );
         }
         await _capture.updateSenders(senders);
         if (status.queued > 0) await _capture.flush();
         return (
           outcome: CaptureOutcome.armed,
           caughtUp: await _catchUp(senders),
+          lastRun: status.lastRun,
         );
       }
 
@@ -143,6 +148,7 @@ class BankSyncRepositoryImpl implements BankSyncRepository {
       return (
         outcome: armed ? CaptureOutcome.armed : CaptureOutcome.standingDown,
         caughtUp: 0,
+        lastRun: status.lastRun,
       );
     });
   }

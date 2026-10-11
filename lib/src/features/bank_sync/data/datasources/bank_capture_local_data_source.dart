@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:mony_time/src/config/api/api_session.dart';
 import 'package:mony_time/src/config/app_config.dart';
 import 'package:mony_time/src/features/bank_sync/data/models/raw_sms.dart';
+import 'package:mony_time/src/features/bank_sync/domain/entities/bank_link.dart';
 import 'package:mony_time/src/utils/logger.dart';
 
 /// What the native capture currently holds.
@@ -13,13 +14,32 @@ class CaptureStatus {
     this.configured = false,
     this.queued = 0,
     this.needsToken = false,
+    this.lastRun,
   });
 
   factory CaptureStatus.fromMap(Map<Object?, Object?> map) => CaptureStatus(
         configured: map['configured'] == true,
         queued: (map['queued'] as num?)?.toInt() ?? 0,
         needsToken: map['needsToken'] == true,
+        lastRun: _runFromMap(map['lastRun']),
       );
+
+  static CaptureRun? _runFromMap(Object? raw) {
+    if (raw is! Map) return null;
+    final at = (raw['atMs'] as num?)?.toInt();
+    if (at == null) return null;
+    final outcome = CaptureRunOutcome.values.cast<CaptureRunOutcome?>().firstWhere(
+          (o) => o!.name == raw['outcome'],
+          orElse: () => null,
+        );
+    if (outcome == null) return null;
+    return CaptureRun(
+      at: DateTime.fromMillisecondsSinceEpoch(at),
+      outcome: outcome,
+      sender: raw['sender'] as String?,
+      detail: raw['detail'] as String?,
+    );
+  }
 
   /// An ingest token is stored on the device.
   final bool configured;
@@ -29,6 +49,9 @@ class CaptureStatus {
 
   /// The server rejected the stored token (revoked elsewhere): re-issue it.
   final bool needsToken;
+
+  /// iPhone: the Shortcuts automation's last run of the intent.
+  final CaptureRun? lastRun;
 }
 
 /// Bridge to the native bank-SMS capture (`money_time/bank_capture`).

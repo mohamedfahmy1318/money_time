@@ -215,7 +215,11 @@ class _BankLinkScreenState extends State<BankLinkScreen> with BankImportFlow {
               onUseThisPhone: _useThisPhone,
             ),
           ] else if (state.deviceMethod == BankLinkMethod.sms)
-            const SmsAccessBanner(),
+            const SmsAccessBanner()
+          else ...[
+            SizedBox(height: 14.h),
+            _ShortcutRunNote(run: state.captureLastRun),
+          ],
           SizedBox(height: 16.h),
           AppGradientButton(
             label: pending > 0
@@ -359,6 +363,65 @@ class _RevokedNote extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// iPhone: what the Shortcuts automation did last. Tells "it never fired"
+/// apart from "it fired and ignored +2010…" — the two look identical in the
+/// inbox, and only the phone knows the difference.
+class _ShortcutRunNote extends StatelessWidget {
+  const _ShortcutRunNote({required this.run});
+
+  final CaptureRun? run;
+
+  @override
+  Widget build(BuildContext context) {
+    final run = this.run;
+    if (run == null) {
+      return NoteBanner(
+        icon: Icons.bolt_outlined,
+        title: 'bank_sync.shortcut_status_title'.tr(),
+        text: 'bank_sync.shortcut_status_none'.tr(),
+      );
+    }
+    final when = AppDate.relative(run.at, context.locale.toString());
+    final (text, tone) = switch (run.outcome) {
+      CaptureRunOutcome.delivered => (
+          'bank_sync.shortcut_status_delivered'.tr(namedArgs: {'when': when}),
+          NoteTone.neutral,
+        ),
+      CaptureRunOutcome.queued => (
+          'bank_sync.shortcut_status_queued'.tr(namedArgs: {'when': when}),
+          NoteTone.neutral,
+        ),
+      CaptureRunOutcome.skipped => (
+          run.sender == null
+              ? 'bank_sync.shortcut_status_skipped_other'
+                  .tr(namedArgs: {'when': when})
+              : 'bank_sync.shortcut_status_skipped'.tr(namedArgs: {
+                  'when': when,
+                  'sender': run.sender!,
+                }),
+          run.sender == null ? NoteTone.neutral : NoteTone.warning,
+        ),
+      CaptureRunOutcome.empty => (
+          'bank_sync.shortcut_status_empty'.tr(namedArgs: {'when': when}),
+          NoteTone.warning,
+        ),
+      CaptureRunOutcome.error => (
+          'bank_sync.shortcut_status_error'.tr(namedArgs: {
+            'when': when,
+            'detail': run.detail ?? '',
+          }),
+          NoteTone.warning,
+        ),
+    };
+    return NoteBanner(
+      icon: Icons.bolt_outlined,
+      tone: tone,
+      title: 'bank_sync.shortcut_status_title'.tr(),
+      text: text,
     );
   }
 }

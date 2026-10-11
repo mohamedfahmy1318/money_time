@@ -23,6 +23,80 @@ void main() {
       expect(p.isConfident, isTrue);
     });
 
+    test('Saudi riyal purchase (Arabic) is a confident expense', () {
+      final p = BankSmsParser.parse(
+        'تم خصم مبلغ 250.00 ريال من بطاقتكم رقم ****3310 لدى PANDA بتاريخ '
+        '22/09/2026. الرصيد المتاح 4,120.50 ريال',
+        receivedAt: received,
+      )!;
+      expect(p.amount, 250);
+      expect(p.type, TransactionType.expense);
+      expect(p.merchant, 'Panda');
+      expect(p.cardLast4, '3310');
+      expect(p.balance, 4120.50);
+      expect(p.currencyDetected, isTrue);
+      expect(p.isConfident, isTrue);
+    });
+
+    test('SAR and USD codes count as currencies', () {
+      final sar = BankSmsParser.parse(
+        'Your Al Rajhi card ending 3310 was charged SAR 250.00 at PANDA on '
+        '24/09/2026 14:32. Available balance SAR 4,120.50',
+        receivedAt: received,
+      )!;
+      expect(sar.amount, 250);
+      expect(sar.balance, 4120.50);
+      expect(sar.currencyDetected, isTrue);
+
+      final usd = BankSmsParser.parse(
+        'Purchase of USD 49.99 with card ending 7781 at AMAZON on 24/09/2026 '
+        '14:32. Available limit USD 1,200.00',
+        receivedAt: received,
+      )!;
+      expect(usd.amount, 49.99);
+      expect(usd.merchant, 'Amazon');
+      expect(usd.cardLast4, '7781');
+      expect(usd.balance, 1200);
+      expect(usd.isConfident, isTrue);
+    });
+
+    test('a count of messages is not an amount in riyals', () {
+      expect(
+        BankSmsParser.parse('تم إرسال 500 رسالة من حسابكم', receivedAt: received),
+        isNull,
+      );
+    });
+
+    test('NBE instant transfer out: ISO date, masked counterparty', () {
+      final p = BankSmsParser.parse(
+        'تم تنفيذ تحويل لحظي من حسابكم رقم xxx5977 بمبلغ 155 جم إلى Ahmed '
+        'A******* N**** A******* A**** رقم مرجعي 247574271415 يوم 2026-10-11 '
+        'الساعه 18:08 للمزيد اتصل ب 19888',
+        receivedAt: DateTime(2026, 10, 11, 18, 9),
+      )!;
+      expect(p.type, TransactionType.expense);
+      expect(p.amount, 155);
+      expect(p.merchant, 'Ahmed');
+      expect(p.cardLast4, '5977');
+      expect(p.occurredAt, DateTime(2026, 10, 11, 18, 8));
+      expect(p.categoryLabel, 'Transfer');
+      expect(p.isConfident, isTrue);
+    });
+
+    test('NBE instant transfer in is income from the named sender', () {
+      final p = BankSmsParser.parse(
+        '-تم إضافة تحويل لحظي لحسابكم رقم xxx5977 بمبلغ 200 جم من احمد '
+        'عبدالعزيز مصطفى محمد رخا رقم مرجعي 263888301792 يوم 2026-10-10 '
+        'الساعه 19:13 للمزيد اتصل علي 19888',
+        receivedAt: DateTime(2026, 10, 11, 18, 9),
+      )!;
+      expect(p.type, TransactionType.income);
+      expect(p.amount, 200);
+      expect(p.merchant, 'احمد عبدالعزيز مصطفى محمد رخا');
+      expect(p.occurredAt, DateTime(2026, 10, 10, 19, 13));
+      expect(p.isConfident, isTrue);
+    });
+
     test('NBE debit (Arabic)', () {
       final p = BankSmsParser.parse(
         'تم خصم مبلغ 350.00 جنيه من حسابكم رقم ****7812 لدى TALABAT بتاريخ '

@@ -93,7 +93,10 @@ abstract final class BankSmsParser {
   // ── Amounts ────────────────────────────────────────────────────────────────
 
   static const _num = r'(\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)';
-  static const _cur = r'(?:EGP|E£|\bLE\b|جنيه(?:ا|اً)?|جم)';
+  /// Mirrors the server's list: Egyptian forms, then the Gulf and major
+  /// currencies. Dotted Arabic codes stay dotted (رس could start a word).
+  static const _cur =
+      r'(?:EGP|E£|\bLE\b|جنيه(?:ا|اً)?|جم|SAR|\bSR\b|ر\.س|ريال(?:ا|اً)?|USD|\$|دولار(?:ا|اً)?|AED|د\.إ|درهم(?:ا|اً)?|KWD|د\.ك|دينار(?:ا|اً)?|QAR|ر\.ق|BHD|د\.ب|OMR|ر\.ع|JOD|د\.أ|EUR|€|يورو|GBP|£)';
 
   static final _currencyAmount =
       RegExp('$_cur ?$_num|$_num ?$_cur', caseSensitive: false);
@@ -204,7 +207,7 @@ abstract final class BankSmsParser {
 
   /// Captures that are the user's own account/card, not a counterparty.
   static final _notMerchant = RegExp(
-    r'^(?:your|the|a|an|my)\b|account|\bcard\b|حساب|بطاقة',
+    r'^(?:your|the|a|an|my)\b|account|\bcard\b|حساب|بطاقة|بطاقت|\bacct\b|a/c',
     caseSensitive: false,
   );
 
@@ -221,7 +224,10 @@ abstract final class BankSmsParser {
 
   /// `UBER *TRIP` → `Uber Trip`; short all-caps words (`KFC`, `H&M`) stay.
   static String _tidyMerchant(String raw) {
+    // Banks mask counterparties as `Ahmed A******* N****`: drop the masked
+    // words, keep the name. `UBER *TRIP` keeps its second word.
     final cleaned = raw
+        .replaceAll(RegExp(r'\s\S\*{2,}'), '')
         .replaceAll('*', ' ')
         .replaceAll(RegExp(r'[\s\-.]+$'), '')
         .replaceAll(RegExp(r'\s+'), ' ')
@@ -251,6 +257,10 @@ abstract final class BankSmsParser {
   }
 
   // ── Date ───────────────────────────────────────────────────────────────────
+
+  /// `2026-10-11` (NBE instant transfers). Checked first: [_numericDate]
+  /// would read `10-11` out of it.
+  static final _isoDate = RegExp(r'(?<!\d)(\d{4})-(\d{1,2})-(\d{1,2})(?!\d)');
 
   static final _numericDate =
       RegExp(r'(?<!\d)(\d{1,2})[/\-](\d{1,2})(?:[/\-](\d{2,4}))?(?!\d)');
@@ -285,9 +295,14 @@ abstract final class BankSmsParser {
     int? month;
     int? year;
 
+    final iso = _isoDate.firstMatch(text);
     final numeric = _numericDate.firstMatch(text);
     final named = _namedDate.firstMatch(text);
-    if (numeric != null) {
+    if (iso != null) {
+      year = int.parse(iso.group(1)!);
+      month = int.parse(iso.group(2)!);
+      day = int.parse(iso.group(3)!);
+    } else if (numeric != null) {
       day = int.parse(numeric.group(1)!);
       month = int.parse(numeric.group(2)!);
       year = int.tryParse(numeric.group(3) ?? '');
