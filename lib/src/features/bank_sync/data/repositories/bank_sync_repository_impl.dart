@@ -21,7 +21,7 @@ import 'package:mony_time/src/shared/enums/transaction_type.dart';
 /// `Either<Failure, T>`.
 ///
 /// Keeps the last bank catalog in memory: the capture's sender filter is the
-/// linked banks' `sender_ids` (exact, trimmed, case-insensitive — the same
+/// linked banks' `sender_ids` (canonical match: case, spaces and punctuation ignored — the same
 /// match the server applies).
 class BankSyncRepositoryImpl implements BankSyncRepository {
   BankSyncRepositoryImpl(
@@ -354,7 +354,7 @@ class BankSyncRepositoryImpl implements BankSyncRepository {
       ];
 
   /// Linked banks' sender ids as shown on phones (the iPhone intent offers
-  /// them by name; Android lower-cases them for its exact match).
+  /// them by name; both platforms match their canonical form).
   Future<List<String>> _sendersFor(List<String> bankIds) async {
     if (_banks.isEmpty) _banks = await _remote.getBanks();
     final seen = <String>{};
@@ -362,7 +362,7 @@ class BankSyncRepositoryImpl implements BankSyncRepository {
       for (final bank in _banks)
         if (bankIds.contains(bank.id))
           for (final sender in bank.senderIds)
-            if (seen.add(sender.trim().toLowerCase())) sender.trim(),
+            if (seen.add(Bank.canonicalSender(sender))) sender.trim(),
     ];
   }
 

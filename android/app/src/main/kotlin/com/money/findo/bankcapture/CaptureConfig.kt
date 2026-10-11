@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.Locale
 
 /**
  * Everything the background capture needs without Flutter running: where to
@@ -56,9 +55,9 @@ internal class CaptureConfig(context: Context) {
     /** Cheap (no Keystore round-trip): runs for every SMS the phone gets. */
     val isConfigured: Boolean get() = baseUrl != null && prefs.contains(KEY_TOKEN)
 
-    /** Exact, trimmed, case-insensitive — the same match the server applies. */
+    /** Canonical match (case, spaces, punctuation ignored) — the same rule the server applies. */
     fun matchesSender(address: String?): Boolean {
-        val normalized = address?.trim()?.lowercase(Locale.ROOT) ?: return false
+        val normalized = SenderId.canonical(address)
         return normalized.isNotEmpty() && normalized in senders
     }
 
@@ -94,7 +93,7 @@ internal class CaptureConfig(context: Context) {
     }
 
     private fun normalized(senders: List<String>): String =
-        JSONArray(senders.map { it.trim().lowercase(Locale.ROOT) }.filter { it.isNotEmpty() }.distinct())
+        JSONArray(senders.map { SenderId.canonical(it) }.filter { it.isNotEmpty() }.distinct())
             .toString()
 
     companion object {

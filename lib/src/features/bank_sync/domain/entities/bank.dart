@@ -24,9 +24,17 @@ class Bank extends Equatable {
   /// ARGB brand colour — tints the monogram tile.
   final int brandColor;
 
+  /// Sender ids vary in case, spacing and punctuation between phones and
+  /// message types (`BanqueMisr` / `Banque Misr`, `BanK-AlAhly`): compare
+  /// the canonical form — lower-case letters and digits only. The server,
+  /// Android and iOS apply the same rule.
+  static String canonicalSender(String sender) => sender
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^\p{L}\p{N}]', unicode: true), '');
+
   bool matchesSender(String sender) {
-    final s = sender.trim().toLowerCase();
-    return senderIds.any((id) => id.toLowerCase() == s);
+    final s = canonicalSender(sender);
+    return s.isNotEmpty && senderIds.any((id) => canonicalSender(id) == s);
   }
 
   @override

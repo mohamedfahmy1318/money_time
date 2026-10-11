@@ -113,13 +113,18 @@ enum BankCaptureStore {
     return version.isEmpty ? "" : "\(version)+\(build)"
   }
 
-  /// Exact, trimmed, case-insensitive — the same match the server applies.
+  /// Sender ids vary in case, spacing and punctuation between phones and
+  /// message types (`BanqueMisr` / `Banque Misr`, `BanK-AlAhly`): compare
+  /// the canonical form — lower-case letters and digits only. The server,
+  /// Android and the Flutter `Bank` entity apply the same rule.
+  static func canonicalSender(_ sender: String) -> String {
+    String(String.UnicodeScalarView(sender.lowercased().unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }))
+  }
+
   static func isLinkedSender(_ sender: String, senders: [String]? = nil) -> Bool {
-    let needle = sender.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    let needle = canonicalSender(sender)
     guard !needle.isEmpty else { return false }
-    return (senders ?? config?.senders ?? []).contains {
-      $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == needle
-    }
+    return (senders ?? config?.senders ?? []).contains { canonicalSender($0) == needle }
   }
 
 }

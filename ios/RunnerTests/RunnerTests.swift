@@ -68,6 +68,11 @@ final class BankCaptureTests: XCTestCase {
     XCTAssertEqual(BankCaptureStore.token, "mti_test_token")
     XCTAssertTrue(BankCaptureStore.isLinkedSender(" bank-alahly "))
     XCTAssertFalse(BankCaptureStore.isLinkedSender("+201001234567"))
+    // Banque Misr's transfers arrive from "Banque Misr"; the catalog says "BanqueMisr".
+    XCTAssertTrue(BankCaptureStore.isLinkedSender("Banque Misr", senders: ["BanqueMisr", "BM"]))
+    XCTAssertTrue(BankCaptureStore.isLinkedSender("BANK ALAHLY", senders: ["BanK-AlAhly"]))
+    XCTAssertFalse(BankCaptureStore.isLinkedSender("Banque", senders: ["BanqueMisr"]), "never a prefix match")
+    XCTAssertFalse(BankCaptureStore.isLinkedSender(" - ", senders: ["BanqueMisr"]))
     queue.add(message())
     BankCaptureStore.clear()
     XCTAssertNil(BankCaptureStore.token)

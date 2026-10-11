@@ -6,7 +6,6 @@ import android.os.Looper
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import java.util.Locale
 import java.util.concurrent.Executors
 
 /**
@@ -85,7 +84,8 @@ object BankCapturePlugin : MethodChannel.MethodCallHandler {
             "readInbox" -> {
                 val sinceMs = (call.argument<Number>("sinceMs") ?: 0).toLong()
                 val senders = (call.argument<List<String>>("senders") ?: emptyList())
-                    .map { it.trim().lowercase(Locale.ROOT) }
+                    .map { SenderId.canonical(it) }
+                    .filter { it.isNotEmpty() }
                     .toSet()
                 io.execute {
                     try {

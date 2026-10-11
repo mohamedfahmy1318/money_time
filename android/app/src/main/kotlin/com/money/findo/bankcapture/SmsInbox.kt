@@ -2,7 +2,6 @@ package com.money.findo.bankcapture
 
 import android.content.Context
 import android.provider.Telephony
-import java.util.Locale
 
 /**
  * Reads bank SMS already on the device for the wizard's "import the last 30
@@ -30,7 +29,7 @@ internal object SmsInbox {
             // rows at most, so this only guards against pathological inboxes.
             while (cursor.moveToNext() && scanned++ < MAX_ROWS) {
                 val address = cursor.getString(0)?.trim() ?: continue
-                if (address.lowercase(Locale.ROOT) !in senders) continue
+                if (SenderId.canonical(address) !in senders) continue
                 val body = cursor.getString(1)?.trim().orEmpty()
                 if (body.isEmpty()) continue
                 val received = cursor.getLong(2)
